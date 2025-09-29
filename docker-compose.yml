@@ -1,0 +1,7 @@
+dockeservices:
+  web:
+    build: .
+    container_name: portfolio-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"   # container 80 -> host 8080
