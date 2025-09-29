@@ -1,16 +1,14 @@
-name: Deploy to IONOS
+name: Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -23,12 +21,18 @@ jobs:
             -e "ssh -o StrictHostKeyChecking=no" \
             ./ ${{ secrets.USER }}@${{ secrets.HOST }}:${{ secrets.TARGET_DIR }}/
 
-      - name: Build & restart container on server
+      - name: Build & restart on server (branch-aware)
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
           set -e
           cd ${{ secrets.TARGET_DIR }}
-          docker compose build --no-cache
-          docker compose up -d
+          BRANCH="${{ github.ref_name }}"
+          if [ "$BRANCH" = "main" ]; then
+            docker compose build --no-cache
+            docker compose up -d
+          else
+            docker compose -f docker-compose.yml -f docker-compose.staging.yml build --no-cache
+            docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+          fi
           docker system prune -f
           EOF
