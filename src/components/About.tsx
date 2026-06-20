@@ -30,11 +30,11 @@ const About = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           <CyberPanel glow="green" className="p-6">
-            <div className="space-y-4 text-gray-400 leading-relaxed text-sm font-mono">
+            <div className="prose-cyber space-y-4">
               {executiveSummary.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
-              <p className="text-emerald-400/90 border-l border-emerald-500/30 pl-4">{profile.brandStatement}</p>
+              <p className="text-emerald-400 font-medium border-l-2 border-emerald-500/40 pl-4">{profile.brandStatement}</p>
             </div>
           </CyberPanel>
 

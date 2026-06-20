@@ -20,11 +20,11 @@ const Research = () => (
               <h3 className="font-display text-xl md:text-2xl font-bold text-white leading-snug">
                 {pub.title}
               </h3>
-              <p className="text-sm text-matrix mt-2 font-mono">{pub.journal}</p>
-              <p className="font-cyber text-[10px] text-gray-500 mt-1">{pub.year}</p>
+              <p className="text-sm text-cyan-400 mt-2 font-mono">{pub.journal}</p>
+              <p className="label-cyber mt-1">{pub.year}</p>
             </div>
           </div>
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 font-mono">{pub.abstract}</p>
+          <p className="prose-cyber mb-4">{pub.abstract}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {pub.keywords.map((k) => (
               <span
@@ -52,7 +52,7 @@ const Research = () => (
             <h4 className="font-display text-lg font-bold text-white mb-4 text-neon">{area.title}</h4>
             <ul className="space-y-2">
               {area.topics.map((t) => (
-                <li key={t} className="text-sm text-gray-400 flex gap-2 font-mono">
+                <li key={t} className="text-sm text-readable-muted flex gap-2 font-body leading-relaxed">
                   <span className="text-matrix">▸</span> {t}
                 </li>
               ))}

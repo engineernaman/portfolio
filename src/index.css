@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply font-body text-readable leading-relaxed;
+    font-size: 16px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-readable tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    @apply text-readable-muted leading-relaxed;
+  }
+}
+
 /* CSS Variables for Dynamic Theming */
 :root {
   --theme-primary: #00ff41;
@@ -119,7 +144,8 @@
 }
 
 .hologram-text {
-  animation: hologram-flicker 3s infinite;
+  animation: none;
+  opacity: 1;
 }
 
 .circuit-border {
@@ -282,5 +308,31 @@ textarea:focus {
 }
 
 .cyber-panel {
-  background: rgba(8, 12, 18, 0.75);
+  background: rgba(10, 14, 22, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Readable body copy inside panels — sans-serif, high contrast */
+.prose-cyber {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: #cbd5e1;
+}
+
+.prose-cyber p {
+  color: #cbd5e1;
+}
+
+.prose-cyber strong,
+.prose-cyber .emphasis {
+  color: #f8fafc;
+}
+
+.label-cyber {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
 }

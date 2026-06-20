@@ -33,7 +33,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, reducedMotion
       <div className="text-center w-72 p-8 border border-white/10 rounded-xl bg-black/80">
         <p className="text-white text-lg font-display font-bold mb-1">SoumySec</p>
         <p className="text-slate/50 text-[10px] tracking-[0.3em] mb-2">LOADING</p>
-        <p className="text-cyan-400/50 text-[9px] tracking-wide mb-6">Threat Intel Lab ready on entry</p>
+        <p className="text-cyan-400/50 text-[9px] tracking-wide mb-6">Live connection scan awaits below ↓</p>
         <div className="w-full h-px bg-white/10 overflow-hidden">
           <div
             className="h-full bg-emerald-500/80 transition-all duration-100"

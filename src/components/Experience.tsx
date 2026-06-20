@@ -35,7 +35,7 @@ const Experience = () => {
                     <div>
                       <h3 className="font-display text-lg md:text-xl font-bold text-white">{exp.title}</h3>
                       <p className="text-emerald-400/90 font-mono text-xs tracking-wider mt-1">{exp.company}</p>
-                      <div className="flex flex-wrap gap-4 mt-2 text-gray-500 text-xs font-cyber">
+                      <div className="flex flex-wrap gap-4 mt-2 text-readable-dim text-xs font-mono">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3 text-matrix" /> {exp.period}
                         </span>
@@ -54,7 +54,7 @@ const Experience = () => {
 
                 {isExpanded && (
                   <div className="px-6 pb-6 border-t border-neon/10">
-                    <p className="text-gray-400 text-sm leading-relaxed mt-4 mb-4 font-mono">{exp.description}</p>
+                    <p className="prose-cyber text-sm mt-4 mb-4">{exp.description}</p>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-cyber text-[10px] tracking-widest text-matrix uppercase mb-3">
@@ -62,7 +62,7 @@ const Experience = () => {
                         </h4>
                         <ul className="space-y-2">
                           {exp.achievements.map((a) => (
-                            <li key={a} className="text-sm text-gray-300 flex gap-2 font-mono">
+                            <li key={a} className="text-sm text-readable-muted flex gap-2 font-body leading-relaxed">
                               <span className="text-neon">▸</span> {a}
                             </li>
                           ))}

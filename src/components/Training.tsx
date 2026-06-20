@@ -19,7 +19,7 @@ const Training = () => (
             <h3 className="font-cyber text-xs tracking-[0.3em] text-neon uppercase mb-3">
               Government & Public Sector Clients
             </h3>
-            <p className="text-sm text-gray-300 font-mono leading-relaxed">
+            <p className="text-base text-readable-muted font-body leading-relaxed">
               {globalTraining.governmentSummary}
             </p>
           </div>
@@ -45,7 +45,7 @@ const Training = () => (
               <div>
                 <h3 className="font-display text-lg font-bold text-white">{eng.title}</h3>
                 <p className="font-cyber text-[10px] text-matrix tracking-wider mt-1">{eng.org}</p>
-                <p className="text-sm text-gray-400 mt-3 leading-relaxed font-mono">{eng.description}</p>
+                <p className="prose-cyber text-sm mt-3">{eng.description}</p>
               </div>
             </div>
           </CyberPanel>
@@ -54,7 +54,7 @@ const Training = () => (
 
       <CyberPanel glow="cyan" className="p-6 mt-8 flex items-center gap-4">
         <Globe className="w-8 h-8 text-matrix shrink-0" />
-        <p className="text-sm text-gray-400 font-mono leading-relaxed">
+        <p className="prose-cyber text-sm">
           Programs delivered: Penetration Testing · Security Operations · SIEM Engineering · SDR ·
           Automotive Security · Digital Forensics · Threat Hunting · Bug Bounty — for government,
           enterprise, and university audiences worldwide.

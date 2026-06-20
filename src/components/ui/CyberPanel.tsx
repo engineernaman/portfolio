@@ -14,7 +14,7 @@ const borderMap = {
 
 const CyberPanel = ({ children, className = '', glow = 'green' }: CyberPanelProps) => (
   <div
-    className={`cyber-panel relative rounded-xl border backdrop-blur-sm transition-colors duration-200 ${borderMap[glow]} ${className}`}
+    className={`cyber-panel relative rounded-xl border backdrop-blur-md transition-colors duration-200 ${borderMap[glow]} ${className}`}
   >
     {children}
   </div>

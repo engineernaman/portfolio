@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Send, Mail, MapPin, Linkedin, Github } from 'lucide-react';
 import SectionHeader from './ui/SectionHeader';
+import VisitorPulse from './VisitorPulse';
+import { sendVisitorPulse } from '../lib/visitorIntel';
+import { useApp } from '../context/AppContext';
 import { profile, social, ventures, professionalIdentity } from '../data/portfolio';
 
 const Contact = () => {
+  const { setVisitorProfile } = useApp();
   const [terminalMode, setTerminalMode] = useState(false);
   const [terminalInput, setTerminalInput] = useState('');
   const [terminalHistory, setTerminalHistory] = useState<string[]>([
@@ -25,7 +29,7 @@ const Contact = () => {
     contact: () => [
       `Email: ${profile.email}`,
       'Location: India · Global engagements',
-      `LinkedIn: ${social.linkedin}`,
+      `LinkedIn: ${social.linkedin} (${social.linkedinFollowers} followers)`,
       `GitHub: ${social.github}`,
     ],
     domains: () => professionalIdentity.map((d) => `· ${d}`),
@@ -57,49 +61,66 @@ const Contact = () => {
     setTerminalInput('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const pulse = await sendVisitorPulse('contact_form', { name: formData.name, email: formData.email });
+    setVisitorProfile(pulse);
     window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`From: ${formData.name} (${formData.email})\n\n${formData.message}`)}`;
   };
 
   return (
     <section id="contact" className="py-20 md:py-28 relative">
       <div className="container mx-auto px-6 max-w-6xl">
+        <div className="mb-10">
+          <VisitorPulse />
+        </div>
+
         <SectionHeader
-          number="07"
+          number="08"
           title="Get In Touch"
-          subtitle="Ready to strengthen your security posture, build secure products, or discuss research and training?"
+          subtitle="Now that you've seen what a perimeter sees — let's talk security, research, training, or speaking."
         />
 
-        <div className="grid lg:grid-cols-2 gap-10">
+        <div className="grid lg:grid-cols-2 gap-10 mt-10">
           <div className="space-y-6">
-            <div className="p-6 border border-white/8 rounded-xl">
-              <h3 className="font-display text-lg font-bold text-slate mb-4">Contact</h3>
-              <div className="space-y-4 text-sm text-mist">
-                <a href={social.email} className="flex items-center gap-3 hover:text-cloud transition-colors">
-                  <Mail className="w-4 h-4 text-cyber" /> {profile.email}
+            <div className="cyber-panel p-6 rounded-xl">
+              <h3 className="font-display text-lg font-bold text-readable mb-4">Contact</h3>
+              <div className="space-y-4 text-base text-readable-muted font-body">
+                <a href={social.email} className="flex items-center gap-3 hover:text-emerald-400 transition-colors">
+                  <Mail className="w-4 h-4 text-emerald-400 shrink-0" /> {profile.email}
                 </a>
                 <p className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-cyber" /> India · Global engagements
+                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" /> India · Global engagements
                 </p>
-                <a href={social.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-cloud transition-colors">
-                  <Linkedin className="w-4 h-4 text-cyber" /> LinkedIn
+                <a
+                  href={social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 hover:text-cyan-400 transition-colors"
+                >
+                  <Linkedin className="w-4 h-4 text-cyan-400 shrink-0" />
+                  LinkedIn · {social.linkedinFollowers} followers
                 </a>
-                <a href={social.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-cloud transition-colors">
-                  <Github className="w-4 h-4 text-cyber" /> GitHub
+                <a
+                  href={social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 hover:text-cyan-400 transition-colors"
+                >
+                  <Github className="w-4 h-4 text-cyan-400 shrink-0" /> GitHub
                 </a>
               </div>
             </div>
 
             <button
               onClick={() => setTerminalMode(!terminalMode)}
-              className="font-mono text-xs tracking-widest text-mist hover:text-cyber transition-colors"
+              className="font-mono text-xs tracking-widest text-readable-dim hover:text-emerald-400 transition-colors"
             >
               {terminalMode ? '← Standard mode' : '→ Terminal mode'}
             </button>
 
             {terminalMode && (
-              <div className="p-4 border border-cyber/20 rounded-xl bg-black/50 font-mono text-xs text-neural h-64 overflow-y-auto">
+              <div className="p-4 border border-emerald-500/20 rounded-xl bg-black/60 font-mono text-xs text-readable-muted h-64 overflow-y-auto">
                 {terminalHistory.map((line, i) => (
                   <div key={i} className="mb-1">{line}</div>
                 ))}
@@ -107,7 +128,7 @@ const Contact = () => {
                   <input
                     value={terminalInput}
                     onChange={(e) => setTerminalInput(e.target.value)}
-                    className="flex-1 bg-transparent border-none outline-none text-slate"
+                    className="flex-1 bg-transparent border-none outline-none text-readable"
                     autoFocus
                   />
                 </form>
@@ -115,8 +136,8 @@ const Contact = () => {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 border border-white/8 rounded-xl space-y-4">
-            <h3 className="font-display text-lg font-bold text-slate mb-2">Send Message</h3>
+          <form onSubmit={handleSubmit} className="cyber-panel p-6 rounded-xl space-y-4">
+            <h3 className="font-display text-lg font-bold text-readable mb-2">Send Message</h3>
             {['name', 'email', 'subject'].map((field) => (
               <input
                 key={field}
@@ -125,7 +146,7 @@ const Contact = () => {
                 required
                 value={formData[field as keyof typeof formData]}
                 onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-slate text-sm focus:border-cyber/50 outline-none transition-colors"
+                className="w-full px-4 py-3 bg-black/30 border border-white/12 rounded-lg text-readable text-base font-body placeholder:text-readable-dim focus:border-emerald-500/50 outline-none transition-colors"
               />
             ))}
             <textarea
@@ -134,11 +155,11 @@ const Contact = () => {
               rows={5}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-slate text-sm focus:border-cyber/50 outline-none transition-colors resize-none"
+              className="w-full px-4 py-3 bg-black/30 border border-white/12 rounded-lg text-readable text-base font-body placeholder:text-readable-dim focus:border-emerald-500/50 outline-none transition-colors resize-none"
             />
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-3 bg-cyber text-void font-mono text-xs tracking-wider rounded-md hover:bg-[#fbbf24] transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-void font-body text-sm font-semibold rounded-md hover:bg-emerald-400 transition-colors"
             >
               <Send className="w-4 h-4" /> Send via Email
             </button>

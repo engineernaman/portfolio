@@ -28,10 +28,10 @@ const Recognition = () => (
                 <Award className="w-5 h-5 text-accent" />
               )}
             </div>
-            <h3 className="font-cyber text-sm font-bold text-white group-hover:text-neon transition-colors leading-snug">
+            <h3 className="font-display text-sm font-bold text-readable group-hover:text-emerald-400 transition-colors leading-snug">
               {item.title}
             </h3>
-            <p className="font-cyber text-[10px] text-gray-500 tracking-wider mt-2">{item.source}</p>
+            <p className="label-cyber mt-2">{item.source}</p>
           </CyberPanel>
         ))}
       </div>

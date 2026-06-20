@@ -21,10 +21,10 @@ const Ventures = () => (
               {v.company}
             </h3>
             <p className="text-sm text-gray-500 font-cyber mt-1">{v.title} · {v.period}</p>
-            <p className="text-gray-400 text-sm leading-relaxed mt-4 font-mono">{v.description}</p>
+            <p className="prose-cyber text-sm mt-4">{v.description}</p>
             <ul className="space-y-2 mt-6">
               {v.highlights.map((h) => (
-                <li key={h} className="text-sm text-gray-300 flex gap-2 font-mono">
+                <li key={h} className="text-sm text-readable-muted flex gap-2 font-body leading-relaxed">
                   <span className="text-neon">▸</span> {h}
                 </li>
               ))}

@@ -41,6 +41,7 @@ import ImmersiveCanvas from './components/three/ImmersiveCanvas';
 import ImmersiveHud from './components/ImmersiveHud';
 
 import IntelLab from './components/IntelLab';
+import VisitorSessionBadge from './components/VisitorSessionBadge';
 
 import { AppProvider, useApp } from './context/AppContext';
 
@@ -152,7 +153,7 @@ function AppContent() {
 
           <div
 
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-void/30 to-void/85 pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-void/40 via-void/65 to-void/95 pointer-events-none"
 
             aria-hidden
 
@@ -189,6 +190,8 @@ function AppContent() {
 
 
       <IntelLab open={intelLabOpen} onClose={closeIntelLab} />
+
+      <VisitorSessionBadge />
 
       <NotificationSystem />
 

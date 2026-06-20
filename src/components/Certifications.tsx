@@ -12,13 +12,13 @@ const Certifications = () => (
 
       <div className="grid md:grid-cols-2 gap-6">
         {certificationCategories.map((cat) => (
-          <div key={cat.name} className="p-6 border border-white/8 rounded-xl">
-            <h3 className="font-mono text-xs tracking-widest text-cyber uppercase mb-4">{cat.name}</h3>
+          <div key={cat.name} className="cyber-panel p-6 rounded-xl">
+            <h3 className="label-cyber mb-4">{cat.name}</h3>
             <div className="flex flex-wrap gap-2">
               {cat.items.map((cert) => (
                 <span
                   key={cert}
-                  className="text-xs font-mono px-3 py-1.5 bg-white/5 border border-white/8 text-mist rounded"
+                  className="text-sm font-body px-3 py-1.5 bg-white/[0.06] border border-white/10 text-readable-muted rounded"
                 >
                   {cert}
                 </span>

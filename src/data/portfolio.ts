@@ -74,8 +74,8 @@ export const speakingEvents = [
 ];
 
 export const speakingAudiences = [
-  { size: '2,000+', label: 'Live audience', icon: 'live' as const },
-  { size: '5,000+', label: 'Online audience', icon: 'online' as const },
+  { size: '2,000+', label: 'Live stage audience', icon: 'live' as const },
+  { size: '5,000+', label: 'Virtual stage audience', icon: 'online' as const },
 ];
 
 export const judgingHighlights = [
@@ -404,9 +404,10 @@ export const certificationNote =
   'Holder of 75+ industry-recognized certifications across cybersecurity, cloud, governance, and DevSecOps domains.';
 
 export const heroStats = [
+  { value: '2M+', label: 'Global Reach' },
+  { value: '12K+', label: 'LinkedIn Followers' },
   { value: '75+', label: 'Certifications' },
-  { value: '2K+', label: 'Live Audience' },
-  { value: '5K+', label: 'Online Reach' },
+  { value: '6+', label: 'Nations Trained' },
 ];
 
 export const sections = [
@@ -424,4 +425,5 @@ export const social = {
   linkedin: 'https://linkedin.com/in/soumysec',
   github: 'https://github.com/soumysec',
   email: 'mailto:soumy.naman@gmail.com',
+  linkedinFollowers: '12K+',
 };
