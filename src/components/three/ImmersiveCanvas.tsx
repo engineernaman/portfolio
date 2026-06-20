@@ -1,7 +1,8 @@
-import { Suspense, useState, useEffect } from 'react';
+import { Component, Suspense, useState, useEffect, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
 import CyberCommandWorld from './CyberCommandWorld';
+import { detectWebGL } from '../../lib/webgl';
 
 function WebGLFallback() {
   return (
@@ -11,49 +12,75 @@ function WebGLFallback() {
   );
 }
 
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback;
+    return this.props.children;
+  }
+}
+
 interface ImmersiveCanvasProps {
   reducedMotion?: boolean;
 }
 
 const ImmersiveCanvas = ({ reducedMotion = false }: ImmersiveCanvasProps) => {
-  const [supported, setSupported] = useState(true);
+  const [webgl, setWebgl] = useState<ReturnType<typeof detectWebGL> | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [eventSource, setEventSource] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      setSupported(!!gl);
-    } catch {
-      setSupported(false);
-    }
+    setWebgl(detectWebGL());
     setIsMobile(/iPhone|iPad|Android/i.test(navigator.userAgent));
     setEventSource(document.body);
   }, []);
 
-  if (!supported) return <WebGLFallback />;
+  if (webgl === null) {
+    return <div className="fixed inset-0 z-0 bg-[#010208]" aria-hidden />;
+  }
+
+  if (webgl.capability === 'none') return <WebGLFallback />;
 
   const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  const lowPower = reducedMotion || isMobile || (deviceMemory !== undefined && deviceMemory < 4);
+  const lowPower =
+    reducedMotion ||
+    webgl.useLegacy ||
+    isMobile ||
+    (deviceMemory !== undefined && deviceMemory < 4);
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" id="immersive-canvas">
-      <Canvas
-        shadows={!lowPower}
-        dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-        camera={{ position: [0, 2, 8], fov: 58 }}
-        gl={{ antialias: !lowPower, alpha: true, powerPreference: lowPower ? 'default' : 'high-performance' }}
-        performance={{ min: 0.5 }}
-        style={{ background: 'transparent', pointerEvents: 'none' }}
-        eventSource={eventSource ?? undefined}
-        eventPrefix="client"
-      >
-        <Suspense fallback={null}>
-          <CyberCommandWorld lowPower={lowPower} />
-          <Preload all />
-        </Suspense>
-      </Canvas>
+      <CanvasErrorBoundary fallback={<WebGLFallback />}>
+        <Canvas
+          legacy={webgl.useLegacy}
+          shadows={!lowPower}
+          dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
+          camera={{ position: [0, 2, 8], fov: 58 }}
+          gl={{
+            antialias: !lowPower,
+            alpha: true,
+            powerPreference: 'default',
+            failIfMajorPerformanceCaveat: false,
+          }}
+          performance={{ min: 0.5 }}
+          style={{ background: 'transparent', pointerEvents: 'none' }}
+          eventSource={eventSource ?? undefined}
+          eventPrefix="client"
+        >
+          <Suspense fallback={null}>
+            <CyberCommandWorld lowPower={lowPower} />
+            <Preload all />
+          </Suspense>
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 };
