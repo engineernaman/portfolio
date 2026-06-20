@@ -53,5 +53,5 @@ jobs:
             docker-compose -f docker-compose.yml -f docker-compose.staging.yml build --no-cache
             docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
           fi
-          docker system prune -f
+          docker system prune -f || true
           EOF
