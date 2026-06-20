@@ -47,11 +47,15 @@ jobs:
           cd ${{ secrets.TARGET_DIR }}
           BRANCH="${{ github.ref_name }}"
           if [ "$BRANCH" = "main" ]; then
-            docker-compose build --no-cache
-            docker-compose up -d
+            docker-compose -p portfolio-prod down --remove-orphans || true
+            docker rm -f portfolio-web 2>/dev/null || true
+            docker-compose -p portfolio-prod build --no-cache
+            docker-compose -p portfolio-prod up -d --force-recreate --remove-orphans
           else
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml build --no-cache
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+            docker-compose -p portfolio-staging -f docker-compose.staging.yml down --remove-orphans || true
+            docker rm -f portfolio-web-staging 2>/dev/null || true
+            docker-compose -p portfolio-staging -f docker-compose.staging.yml build --no-cache
+            docker-compose -p portfolio-staging -f docker-compose.staging.yml up -d --force-recreate --remove-orphans
           fi
           docker system prune -f || true
           EOF

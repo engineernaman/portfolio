@@ -1,5 +1,12 @@
 services:
   web:
+    build: .
     container_name: portfolio-web-staging
+    restart: unless-stopped
     ports:
       - "8081:80"
+    volumes:
+      - visitor-logs-staging:/app/logs
+
+volumes:
+  visitor-logs-staging:
