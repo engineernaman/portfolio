@@ -3,3 +3,7 @@ node_modules
 .gitignore
 .vscode
 dist
+.env
+.cursor
+docs
+improvement.md

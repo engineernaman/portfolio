@@ -138,9 +138,9 @@ const Projects = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Featured <span className="text-cyan-400">Projects</span>
+            Featured <span className="text-coral">Projects</span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-green-400 mx-auto mb-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-coral to-violet mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto">
             Cutting-edge security tools and platforms developed to address modern cybersecurity challenges
           </p>
@@ -150,7 +150,7 @@ const Projects = () => {
           {projects.map((project, index) => (
             <div
               key={project.id}
-              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-500 group hover:scale-105 cursor-pointer"
+              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-violet/40 transition-all duration-500 group hover:scale-105 cursor-pointer"
               onClick={() => setSelectedProject(selectedProject === index ? null : index)}
             >
               <div className="p-6">
@@ -161,7 +161,7 @@ const Projects = () => {
                   <div className="flex items-center space-x-2">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       project.status === 'Production' 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                        ? 'bg-green-500/20 text-violet border border-green-500/30' 
                         : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                     }`}>
                       {project.status}
@@ -169,10 +169,10 @@ const Projects = () => {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-coral transition-colors duration-300">
                   {project.title}
                 </h3>
-                <p className="text-sm text-green-400 mb-3">{project.category}</p>
+                <p className="text-sm text-violet mb-3">{project.category}</p>
                 <p className="text-gray-300 text-sm mb-4 line-clamp-3">{project.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -185,7 +185,7 @@ const Projects = () => {
                     </span>
                   ))}
                   {project.technologies.length > 3 && (
-                    <span className="px-2 py-1 text-xs text-cyan-400">
+                    <span className="px-2 py-1 text-xs text-coral">
                       +{project.technologies.length - 3}
                     </span>
                   )}
@@ -202,7 +202,7 @@ const Projects = () => {
                 <div className="flex space-x-3">
                   <a
                     href={project.github}
-                    className="flex items-center space-x-2 text-cyan-400 hover:text-white transition-colors duration-300"
+                    className="flex items-center space-x-2 text-coral hover:text-white transition-colors duration-300"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Github className="w-4 h-4" />
@@ -210,7 +210,7 @@ const Projects = () => {
                   </a>
                   <a
                     href={project.demo}
-                    className="flex items-center space-x-2 text-green-400 hover:text-white transition-colors duration-300"
+                    className="flex items-center space-x-2 text-violet hover:text-white transition-colors duration-300"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -226,7 +226,7 @@ const Projects = () => {
                       <ul className="space-y-1">
                         {project.features.map((feature, idx) => (
                           <li key={idx} className="flex items-center space-x-2 text-sm text-gray-300">
-                            <span className="text-green-400">▶</span>
+                            <span className="text-violet">▶</span>
                             <span>{feature}</span>
                           </li>
                         ))}
@@ -236,7 +236,7 @@ const Projects = () => {
                       {project.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded text-cyan-400"
+                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded text-coral"
                         >
                           {tech}
                         </span>

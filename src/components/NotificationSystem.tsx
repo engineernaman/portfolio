@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, AlertTriangle, CheckCircle, Info, Zap } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 interface Notification {
   id: string;
@@ -11,43 +12,50 @@ interface Notification {
 
 const NotificationSystem = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { registerShowNotification, playTypingSound, reducedMotion } = useApp();
+
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const addNotification = useCallback(
+    (notification: Notification) => {
+      setNotifications((prev) => [...prev, notification]);
+
+      if (notification.duration) {
+        setTimeout(() => removeNotification(notification.id), notification.duration);
+      }
+
+      playTypingSound();
+    },
+    [playTypingSound, removeNotification]
+  );
 
   useEffect(() => {
-    // Add welcome notification
+    registerShowNotification((title, message, type = 'info') => {
+      addNotification({
+        id: crypto.randomUUID(),
+        type,
+        title,
+        message,
+      });
+    });
+  }, [registerShowNotification, addNotification]);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+
     const welcomeNotification: Notification = {
       id: 'welcome',
       type: 'success',
       title: 'System Online',
       message: 'Welcome to SoumySec Terminal. All systems operational.',
-      duration: 5000
+      duration: 5000,
     };
-    
-    setTimeout(() => {
-      addNotification(welcomeNotification);
-    }, 2000);
 
-    // Expose global notification function
-    (window as any).showNotification = addNotification;
-  }, []);
-
-  const addNotification = (notification: Notification) => {
-    setNotifications(prev => [...prev, notification]);
-    
-    if (notification.duration) {
-      setTimeout(() => {
-        removeNotification(notification.id);
-      }, notification.duration);
-    }
-    
-    // Play sound effect
-    if ((window as any).playTypingSound) {
-      (window as any).playTypingSound();
-    }
-  };
-
-  const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  };
+    const timer = setTimeout(() => addNotification(welcomeNotification), 2000);
+    return () => clearTimeout(timer);
+  }, [addNotification, reducedMotion]);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -61,10 +69,10 @@ const NotificationSystem = () => {
 
   const getColors = (type: string) => {
     switch (type) {
-      case 'success': return 'border-green-400 bg-green-400/10 text-green-400';
+      case 'success': return 'border-coral/40 bg-violet/10 text-violet';
       case 'error': return 'border-red-400 bg-red-400/10 text-red-400';
       case 'warning': return 'border-yellow-400 bg-yellow-400/10 text-yellow-400';
-      case 'info': return 'border-cyan-400 bg-cyan-400/10 text-cyan-400';
+      case 'info': return 'border-violet/40 bg-coral/10 text-coral';
       default: return 'border-gray-400 bg-gray-400/10 text-gray-400';
     }
   };

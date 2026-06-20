@@ -43,7 +43,7 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ isActive, onComplete }) => {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#00ff41';
+      ctx.fillStyle = '#8b6dff';
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
@@ -52,7 +52,7 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ isActive, onComplete }) => {
         const y = drops[i] * fontSize;
 
         // Add glow effect
-        ctx.shadowColor = '#00ff41';
+        ctx.shadowColor = '#8b6dff';
         ctx.shadowBlur = 10;
         ctx.fillText(char, x, y);
         ctx.shadowBlur = 0;
@@ -90,10 +90,10 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ isActive, onComplete }) => {
       />
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-400 mb-4 animate-pulse">
+          <h1 className="text-4xl md:text-6xl font-bold text-violet mb-4 animate-pulse">
             ENTERING THE MATRIX
           </h1>
-          <p className="text-green-400 font-mono">
+          <p className="text-violet font-mono">
             Wake up, Neo... The Matrix has you...
           </p>
         </div>

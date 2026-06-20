@@ -39,28 +39,28 @@ const StatusBar = () => {
     if (reverse) {
       if (value > 80) return 'text-red-400';
       if (value > 60) return 'text-yellow-400';
-      return 'text-green-400';
+      return 'text-violet';
     } else {
-      if (value > 80) return 'text-green-400';
+      if (value > 80) return 'text-violet';
       if (value > 60) return 'text-yellow-400';
       return 'text-red-400';
     }
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-black/90 border-b border-cyan-500/30 backdrop-blur-sm">
+    <div className="fixed top-16 left-0 right-0 z-40 bg-black/90 border-b border-cyan-500/30 backdrop-blur-sm">
       <div className="container mx-auto px-6 py-2">
         <div className="flex items-center justify-between text-xs font-mono">
           {/* Left side - System info */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
-              <Shield className="w-4 h-4 text-cyan-400" />
+              <Shield className="w-4 h-4 text-coral" />
               <span className="text-white">SOUMY</span>
-              <span className="text-cyan-400">SEC</span>
+              <span className="text-coral">SEC</span>
             </div>
             
             <div className="flex items-center space-x-1">
-              <Activity className="w-3 h-3 text-green-400" />
+              <Activity className="w-3 h-3 text-violet" />
               <span className="text-gray-400">CPU:</span>
               <span className={getStatusColor(systemStats.cpu, true)}>
                 {systemStats.cpu.toFixed(1)}%
@@ -79,21 +79,21 @@ const StatusBar = () => {
           {/* Center - Status messages */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 animate-pulse">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-green-400">SYSTEM SECURE</span>
+              <div className="w-2 h-2 bg-violet rounded-full"></div>
+              <span className="text-violet">SYSTEM SECURE</span>
             </div>
             
             <div className="flex items-center space-x-1">
-              <Shield className="w-3 h-3 text-green-400" />
+              <Shield className="w-3 h-3 text-violet" />
               <span className="text-gray-400">SEC:</span>
-              <span className="text-green-400">{systemStats.security.toFixed(1)}%</span>
+              <span className="text-violet">{systemStats.security.toFixed(1)}%</span>
             </div>
           </div>
 
           {/* Right side - Network and time */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-1">
-              <Wifi className="w-3 h-3 text-cyan-400" />
+              <Wifi className="w-3 h-3 text-coral" />
               <span className="text-gray-400">NET:</span>
               <span className={getStatusColor(systemStats.network)}>
                 {systemStats.network.toFixed(1)}%
@@ -101,13 +101,13 @@ const StatusBar = () => {
             </div>
             
             <div className="flex items-center space-x-1">
-              <Battery className="w-3 h-3 text-green-400" />
-              <span className="text-green-400">PWR: ∞</span>
+              <Battery className="w-3 h-3 text-violet" />
+              <span className="text-violet">PWR: ∞</span>
             </div>
             
             <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3 text-cyan-400" />
-              <span className="text-cyan-400">{formatTime(time)}</span>
+              <Clock className="w-3 h-3 text-coral" />
+              <span className="text-coral">{formatTime(time)}</span>
             </div>
           </div>
         </div>

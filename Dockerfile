@@ -2,15 +2,20 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY . .
-# If your build script is "build" (Vite default)
 RUN npm run build
 
-# --- serve stage ---
-FROM nginx:alpine
-# Optional: better caching; SPA 404 to index.html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+# --- run stage (static + visitor API) ---
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=80
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps --omit=dev
+COPY server ./server
+COPY --from=builder /app/dist ./dist
+RUN mkdir -p logs && chown -R node:node logs
+USER node
 EXPOSE 80
-CMD ["nginx","-g","daemon off;"]
+CMD ["node", "server/index.mjs"]

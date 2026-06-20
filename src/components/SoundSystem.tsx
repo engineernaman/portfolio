@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, VolumeX, Music } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
-const SoundSystem = () => {
+const SoundSystem = ({ compact = false }: { compact?: boolean }) => {
+  const { registerPlayTypingSound, reducedMotion } = useApp();
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -93,36 +95,41 @@ const SoundSystem = () => {
     }
   };
 
-  // Expose typing sound globally
   useEffect(() => {
-    (window as any).playTypingSound = playTypingSound;
-  }, [isEnabled]);
+    registerPlayTypingSound(playTypingSound);
+  }, [isEnabled, registerPlayTypingSound]);
+
+  if (reducedMotion) return null;
+
+  const btnClass = compact
+    ? 'p-2 rounded-lg border transition-colors'
+    : 'p-3 rounded-full border transition-all duration-300 hover:scale-110';
 
   return (
-    <div className="fixed top-20 right-6 z-50 flex flex-col space-y-2">
+    <div className={compact ? 'flex items-center gap-1.5' : 'flex flex-col space-y-2'}>
       <button
         onClick={() => setIsEnabled(!isEnabled)}
-        className={`p-3 rounded-full border transition-all duration-300 ${
-          isEnabled 
-            ? 'bg-green-500/20 border-green-400 text-green-400' 
-            : 'bg-gray-800/50 border-gray-600 text-gray-400'
-        } hover:scale-110`}
-        title={isEnabled ? 'Disable Sound Effects' : 'Enable Sound Effects'}
+        className={`${btnClass} ${
+          isEnabled
+            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+            : 'bg-black/50 border-white/10 text-slate/50 hover:text-white'
+        }`}
+        aria-label={isEnabled ? 'Disable sound effects' : 'Enable sound effects'}
       >
-        {isEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+        {isEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
       </button>
-      
+
       {isEnabled && (
         <button
           onClick={isPlaying ? stopAmbientSound : playAmbientSound}
-          className={`p-3 rounded-full border transition-all duration-300 ${
-            isPlaying 
-              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 animate-pulse' 
-              : 'bg-gray-800/50 border-gray-600 text-gray-400'
-          } hover:scale-110`}
-          title={isPlaying ? 'Stop Ambient Sound' : 'Play Ambient Sound'}
+          className={`${btnClass} ${
+            isPlaying
+              ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400 animate-pulse'
+              : 'bg-black/50 border-white/10 text-slate/50 hover:text-white'
+          }`}
+          aria-label={isPlaying ? 'Stop ambient sound' : 'Play ambient sound'}
         >
-          <Music className="w-5 h-5" />
+          <Music className="w-4 h-4" />
         </button>
       )}
     </div>

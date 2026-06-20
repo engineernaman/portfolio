@@ -1,92 +1,108 @@
-import React from 'react';
-import { Shield, Code, Database, Cloud, Search, Lock } from 'lucide-react';
+import SectionHeader from './ui/SectionHeader';
 import SkillsRadar from './SkillsRadar';
 import InteractiveTimeline from './InteractiveTimeline';
+import CyberPanel from './ui/CyberPanel';
+import {
+  executiveSummary,
+  professionalIdentity,
+  skillDomains,
+  certificationCategories,
+  profile,
+} from '../data/portfolio';
+
+const levelColor: Record<string, string> = {
+  EXPERT: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
+  ADVANCED: 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10',
+  INTERMEDIATE: 'text-slate/70 border-white/10 bg-white/5',
+};
 
 const About = () => {
-  const skills = [
-    { name: 'Penetration Testing', level: 95, icon: Shield, color: 'text-red-400' },
-    { name: 'DevSecOps', level: 90, icon: Code, color: 'text-blue-400' },
-    { name: 'Cloud Security', level: 88, icon: Cloud, color: 'text-cyan-400' },
-    { name: 'Digital Forensics', level: 85, icon: Search, color: 'text-green-400' },
-    { name: 'Security Architecture', level: 92, icon: Lock, color: 'text-purple-400' },
-    { name: 'Vulnerability Assessment', level: 94, icon: Database, color: 'text-yellow-400' }
-  ];
-
-  const radarSkills = [
-    { name: 'Penetration Testing', level: 95, color: '#ef4444' },
-    { name: 'DevSecOps', level: 90, color: '#3b82f6' },
-    { name: 'Cloud Security', level: 88, color: '#06b6d4' },
-    { name: 'Digital Forensics', level: 85, color: '#10b981' },
-    { name: 'Security Architecture', level: 92, color: '#8b5cf6' },
-    { name: 'Vulnerability Assessment', level: 94, color: '#f59e0b' }
-  ];
+  const radarSkills = skillDomains.slice(0, 6).map((s, i) => ({
+    name: s.name.split(' ')[0],
+    level: s.level === 'EXPERT' ? 95 : s.level === 'ADVANCED' ? 82 : 70,
+    color: i % 2 === 0 ? '#00ff41' : '#00ffff',
+  }));
 
   return (
-    <section id="about" className="py-20 relative">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            About <span className="text-cyan-400">Me</span>
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-green-400 mx-auto"></div>
-        </div>
+    <section id="about" className="py-20 md:py-28 relative">
+      <div className="container mx-auto px-6 max-w-6xl">
+        <SectionHeader number="01" title="Executive Profile" subtitle={profile.mission} />
 
-        <div className="grid lg:grid-cols-3 gap-12 mb-16">
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-6">Security Professional</h3>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              With over 9 years of experience in cybersecurity, I specialize in protecting digital infrastructure 
-              through comprehensive security assessments, penetration testing, and DevSecOps implementations. 
-              My expertise spans across cloud security, digital forensics, and security architecture design.
-            </p>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              I'm passionate about bridging the gap between security and development teams, ensuring that security 
-              is integrated from the ground up rather than being an afterthought. My approach combines technical 
-              expertise with strategic thinking to deliver robust security solutions.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {['CISSP', 'CEH', 'OSCP', 'AWS Security', 'GCIH', 'SANS'].map((cert) => (
-                <span key={cert} className="px-3 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-full text-cyan-400 text-sm">
-                  {cert}
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          <CyberPanel glow="green" className="p-6">
+            <div className="prose-cyber space-y-4">
+              {executiveSummary.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+              <p className="text-emerald-400 font-medium border-l-2 border-emerald-500/40 pl-4">{profile.brandStatement}</p>
+            </div>
+          </CyberPanel>
+
+          <CyberPanel glow="cyan" className="p-6">
+            <h3 className="font-cyber text-xs tracking-[0.3em] text-matrix uppercase mb-4">
+              Domain Matrix
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {professionalIdentity.map((item) => (
+                <span
+                  key={item}
+                  className="font-cyber text-[10px] tracking-wider px-2 py-1 border border-neon/30 text-neon rounded hover:bg-neon/10 transition-colors"
+                >
+                  {item}
                 </span>
               ))}
             </div>
-          </div>
+          </CyberPanel>
+        </div>
 
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">Skills Radar</h3>
-            <SkillsRadar skills={radarSkills} />
-          </div>
-
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-6">Core Competencies</h3>
-            <div className="space-y-6">
-              {skills.map((skill, index) => (
-                <div key={skill.name} className="group">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <skill.icon className={`w-5 h-5 ${skill.color}`} />
-                      <span className="text-white font-medium">{skill.name}</span>
-                    </div>
-                    <span className="text-cyan-400 font-bold">{skill.level}%</span>
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+          <div className="lg:col-span-2">
+            <h3 className="font-mono text-[10px] tracking-widest text-slate/50 uppercase mb-4">
+              Skill Levels
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {skillDomains.map((skill) => (
+                <CyberPanel key={skill.name} glow="green" className="p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-gray-300 font-mono">{skill.name}</span>
+                    <span
+                      className={`font-cyber text-[9px] tracking-widest px-2 py-1 border rounded ${levelColor[skill.level]}`}
+                    >
+                      {skill.level}
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-cyan-400 to-green-400 rounded-full transition-all duration-1000 ease-out group-hover:from-green-400 group-hover:to-cyan-400"
-                      style={{ width: `${skill.level}%` }}
-                    ></div>
-                  </div>
-                </div>
+                </CyberPanel>
               ))}
             </div>
           </div>
+
+          <CyberPanel glow="cyan" className="p-4">
+            <h3 className="font-cyber text-xs tracking-widest text-matrix uppercase mb-4 text-center">
+              Radar
+            </h3>
+            <SkillsRadar skills={radarSkills} />
+          </CyberPanel>
         </div>
 
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-8 text-center">Interactive Career Timeline</h3>
-          <InteractiveTimeline />
-        </div>
+        <CyberPanel glow="magenta" className="p-6 mb-12">
+          <h3 className="font-cyber text-xs tracking-[0.3em] text-accent uppercase mb-4">
+            75+ Certifications — Highlights
+          </h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {certificationCategories.map((cat) => (
+              <div key={cat.name} className="border border-white/5 p-3 rounded bg-black/30">
+                <p className="font-cyber text-[10px] text-neon mb-2">{cat.name}</p>
+                <div className="flex flex-wrap gap-1">
+                  {cat.items.slice(0, 4).map((c) => (
+                    <span key={c} className="text-[9px] text-gray-500 font-mono">{c}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CyberPanel>
+
+        <InteractiveTimeline />
       </div>
     </section>
   );
