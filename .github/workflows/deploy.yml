@@ -24,9 +24,11 @@ jobs:
             -e "ssh" \
             --include='Dockerfile' \
             --include='docker-compose.yml' \
+            --include='docker-compose.staging.yml' \
             --include='nginx.conf' \
             --include='package.json' \
             --include='package-lock.json' \
+            --include='server/***' \
             --include='src/***' \
             --include='public/***' \
             --include='index.html' \
@@ -45,11 +47,11 @@ jobs:
           cd ${{ secrets.TARGET_DIR }}
           BRANCH="${{ github.ref_name }}"
           if [ "$BRANCH" = "main" ]; then
-            docker compose build --no-cache
-            docker compose up -d
+            docker-compose build --no-cache
+            docker-compose up -d
           else
-            docker compose -f docker-compose.yml -f docker-compose.staging.yml build --no-cache
-            docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+            docker-compose -f docker-compose.yml -f docker-compose.staging.yml build --no-cache
+            docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
           fi
           docker system prune -f
           EOF
