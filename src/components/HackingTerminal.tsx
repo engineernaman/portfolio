@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Zap } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { profile, skillDomains, ventures } from '../data/portfolio';
 
 const HackingTerminal = () => {
+  const { triggerMatrix, playTypingSound } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([
@@ -22,7 +25,8 @@ const HackingTerminal = () => {
       '  clear    - Clear terminal',
       '  matrix   - Enter the matrix',
       '  whoami   - Display user info',
-      '  skills   - Show skill levels',
+      '  skills   - Show domain skill levels',
+      '  ventures - List ventures & advisory roles',
       '  exit     - Close terminal'
     ],
     hack: () => {
@@ -64,9 +68,7 @@ const HackingTerminal = () => {
       'Exploit successful!'
     ],
     matrix: () => {
-      if ((window as any).triggerMatrix) {
-        (window as any).triggerMatrix();
-      }
+      triggerMatrix();
       return [
         'Entering the Matrix...',
         '01001000 01100101 01101100 01101100 01101111',
@@ -79,23 +81,18 @@ const HackingTerminal = () => {
       ];
     },
     whoami: () => [
-      'User: soumy_naman_srivastava',
-      'Role: Cybersecurity Lead',
-      'Clearance Level: TOP SECRET',
-      'Years of Experience: 9+',
-      'Specialization: Penetration Testing, DevSecOps',
-      'Status: Currently securing the digital world'
+      `User: ${profile.name}`,
+      `Role: ${profile.roles[0]}`,
+      `Email: ${profile.email}`,
+      'Current: Cyber Security Lead, Pert Telecom Solutions',
+      'Focus: Telecom, AI Security, Cloud, DevSecOps',
     ],
     skills: () => [
-      'Skill Assessment Report:',
-      '========================',
-      'Penetration Testing    ████████████████████ 95%',
-      'DevSecOps             ████████████████████ 90%',
-      'Security Architecture ████████████████████ 92%',
-      'Vulnerability Assessment ███████████████████ 94%',
-      'Cloud Security        ████████████████████ 88%',
-      'Digital Forensics     ████████████████████ 85%'
+      'Domain Assessment:',
+      '==================',
+      ...skillDomains.map((s) => `${s.name.padEnd(36)} ${s.level}`),
     ],
+    ventures: () => ventures.map((v) => `${v.company} — ${v.title} (${v.period})`),
     clear: () => {
       setOutput(['SoumySec Terminal v2.1.0', 'Terminal cleared.', '$ ']);
       return [];
@@ -128,9 +125,7 @@ const HackingTerminal = () => {
     if (e.key === 'Enter') {
       handleCommand(input);
       setInput('');
-      if ((window as any).playTypingSound) {
-        (window as any).playTypingSound();
-      }
+      playTypingSound();
     }
   };
 
@@ -165,7 +160,7 @@ const HackingTerminal = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 bg-black/80 border border-green-400 rounded-full text-green-400 hover:bg-green-400/20 transition-all duration-300 z-50 group"
+        className="fixed bottom-6 right-6 p-4 bg-black/80 border border-coral/40 rounded-full text-violet hover:bg-violet/20 transition-all duration-300 z-50 group"
         title="Open Hacking Terminal (or try the Konami code!)"
       >
         <Terminal className="w-6 h-6 group-hover:animate-pulse" />
@@ -174,11 +169,11 @@ const HackingTerminal = () => {
   }
 
   return (
-    <div className="fixed inset-4 bg-black/95 border border-green-400 rounded-lg z-50 flex flex-col overflow-hidden backdrop-blur-sm">
-      <div className="flex items-center justify-between p-4 border-b border-green-400/30 bg-black/50">
+    <div className="fixed inset-4 bg-black/95 border border-coral/40 rounded-lg z-50 flex flex-col overflow-hidden backdrop-blur-sm">
+      <div className="flex items-center justify-between p-4 border-b border-coral/40/30 bg-black/50">
         <div className="flex items-center space-x-2">
-          <Terminal className="w-5 h-5 text-green-400" />
-          <span className="text-green-400 font-mono">SoumySec Terminal</span>
+          <Terminal className="w-5 h-5 text-violet" />
+          <span className="text-violet font-mono">SoumySec Terminal</span>
           {isHacking && <Zap className="w-4 h-4 text-red-400 animate-pulse" />}
         </div>
         <button
@@ -191,30 +186,30 @@ const HackingTerminal = () => {
       
       <div 
         ref={terminalRef}
-        className="flex-1 p-4 font-mono text-sm text-green-400 overflow-y-auto bg-black/80"
+        className="flex-1 p-4 font-mono text-sm text-violet overflow-y-auto bg-black/80"
         style={{ fontFamily: 'Courier New, monospace' }}
       >
         {output.map((line, index) => (
-          <div key={index} className={`${line.startsWith('$') ? 'text-cyan-400' : 'text-green-400'} ${isHacking && line.includes('exploit') ? 'animate-pulse text-red-400' : ''}`}>
+          <div key={index} className={`${line.startsWith('$') ? 'text-coral' : 'text-violet'} ${isHacking && line.includes('exploit') ? 'animate-pulse text-red-400' : ''}`}>
             {line}
           </div>
         ))}
         <div className="flex items-center">
-          <span className="text-cyan-400 mr-2">$</span>
+          <span className="text-coral mr-2">$</span>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="bg-transparent outline-none text-green-400 flex-1"
+            className="bg-transparent outline-none text-violet flex-1"
             placeholder="Enter command..."
             autoFocus
           />
-          <span className="animate-pulse text-green-400">|</span>
+          <span className="animate-pulse text-violet">|</span>
         </div>
       </div>
       
-      <div className="p-2 border-t border-green-400/30 bg-black/50 text-xs text-gray-400 font-mono">
+      <div className="p-2 border-t border-coral/40/30 bg-black/50 text-xs text-gray-400 font-mono">
         Tip: Try "hack", "matrix", or use ↑↑↓↓←→←→BA for secret access
       </div>
     </div>

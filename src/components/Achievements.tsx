@@ -170,8 +170,8 @@ const Achievements = () => {
     switch (level) {
       case 'legendary': return 'text-yellow-400';
       case 'elite': return 'text-purple-400';
-      case 'expert': return 'text-cyan-400';
-      default: return 'text-green-400';
+      case 'expert': return 'text-coral';
+      default: return 'text-violet';
     }
   };
 
@@ -189,9 +189,9 @@ const Achievements = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Achievements & <span className="text-cyan-400">Recognition</span>
+            Achievements & <span className="text-coral">Recognition</span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-green-400 mx-auto mb-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-coral to-violet mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto">
             Recognition and achievements in cybersecurity competitions, research, and community contributions
           </p>
@@ -210,13 +210,13 @@ const Achievements = () => {
             <div className="text-gray-300">Elite</div>
           </div>
           <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg p-6 text-center">
-            <Star className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-cyan-400 mb-2">{levelCounts.expert || 0}</div>
+            <Star className="w-8 h-8 text-coral mx-auto mb-3" />
+            <div className="text-3xl font-bold text-coral mb-2">{levelCounts.expert || 0}</div>
             <div className="text-gray-300">Expert</div>
           </div>
           <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border border-green-500/30 rounded-lg p-6 text-center">
-            <Zap className="w-8 h-8 text-green-400 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-green-400 mb-2">{totalPoints.toLocaleString()}</div>
+            <Zap className="w-8 h-8 text-violet mx-auto mb-3" />
+            <div className="text-3xl font-bold text-violet mb-2">{totalPoints.toLocaleString()}</div>
             <div className="text-gray-300">Total Points</div>
           </div>
         </div>
@@ -230,7 +230,7 @@ const Achievements = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 ${
                 selectedCategory === category.id
                   ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-black'
-                  : 'bg-black/40 border border-cyan-500/30 text-cyan-400 hover:border-cyan-400'
+                  : 'bg-black/40 border border-cyan-500/30 text-coral hover:border-violet/40'
               }`}
             >
               <category.icon className="w-4 h-4" />
@@ -244,7 +244,7 @@ const Achievements = () => {
           {filteredAchievements.map((achievement, index) => (
             <div
               key={achievement.id}
-              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group"
+              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-violet/40 transition-all duration-300 group"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -255,11 +255,11 @@ const Achievements = () => {
                     <span className={`px-3 py-1 text-xs rounded-full border ${getLevelBadge(achievement.level)} ${getLevelColor(achievement.level)} uppercase font-bold`}>
                       {achievement.level}
                     </span>
-                    <span className="text-cyan-400 font-bold text-lg">+{achievement.points}</span>
+                    <span className="text-coral font-bold text-lg">+{achievement.points}</span>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-coral transition-colors duration-300">
                   {achievement.title}
                 </h3>
                 <p className="text-sm text-gray-400 mb-3">{achievement.year}</p>
@@ -273,7 +273,7 @@ const Achievements = () => {
                     </div>
                     <div>
                       <h4 className="text-white font-semibold mb-2">Impact:</h4>
-                      <p className="text-green-400 text-sm">{achievement.impact}</p>
+                      <p className="text-violet text-sm">{achievement.impact}</p>
                     </div>
                     <div>
                       <h4 className="text-white font-semibold mb-2">Key Statistics:</h4>
@@ -293,13 +293,13 @@ const Achievements = () => {
                   {achievement.skills.slice(0, 3).map((skill) => (
                     <span
                       key={skill}
-                      className="px-2 py-1 text-xs bg-gradient-to-r from-green-500/20 to-cyan-500/20 border border-green-500/30 rounded text-green-400"
+                      className="px-2 py-1 text-xs bg-gradient-to-r from-green-500/20 to-cyan-500/20 border border-green-500/30 rounded text-violet"
                     >
                       {skill}
                     </span>
                   ))}
                   {achievement.skills.length > 3 && (
-                    <span className="px-2 py-1 text-xs text-cyan-400">
+                    <span className="px-2 py-1 text-xs text-coral">
                       +{achievement.skills.length - 3}
                     </span>
                   )}
@@ -307,7 +307,7 @@ const Achievements = () => {
 
                 <button
                   onClick={() => setExpandedAchievement(expandedAchievement === index ? null : index)}
-                  className="flex items-center space-x-2 text-cyan-400 hover:text-white transition-colors duration-300"
+                  className="flex items-center space-x-2 text-coral hover:text-white transition-colors duration-300"
                 >
                   <span>{expandedAchievement === index ? 'Show Less' : 'Show Details'}</span>
                   {expandedAchievement === index ? (
@@ -337,7 +337,7 @@ const Achievements = () => {
             </div>
             <div className="text-center">
               <div className="text-4xl mb-2">⚡</div>
-              <div className="text-xl font-bold text-green-400 mb-1">5 Zero-Days</div>
+              <div className="text-xl font-bold text-violet mb-1">5 Zero-Days</div>
               <div className="text-gray-300">Critical Systems</div>
             </div>
           </div>

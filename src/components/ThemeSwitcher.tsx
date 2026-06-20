@@ -1,128 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import { Palette, Zap, Shield, Code } from 'lucide-react';
-
-interface Theme {
-  name: string;
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  icon: React.ComponentType<any>;
-}
-
-const themes: Theme[] = [
-  {
-    name: 'Matrix Green',
-    primary: '#00ff41',
-    secondary: '#00ffff',
-    accent: '#ff0040',
-    background: 'from-black via-gray-900 to-black',
-    icon: Code
-  },
-  {
-    name: 'Neon Blue',
-    primary: '#00ffff',
-    secondary: '#0080ff',
-    accent: '#ff4080',
-    background: 'from-blue-900 via-black to-blue-900',
-    icon: Zap
-  },
-  {
-    name: 'Cyber Purple',
-    primary: '#8b5cf6',
-    secondary: '#a855f7',
-    accent: '#f59e0b',
-    background: 'from-purple-900 via-black to-purple-900',
-    icon: Shield
-  },
-  {
-    name: 'Hacker Red',
-    primary: '#ff0040',
-    secondary: '#ff4080',
-    accent: '#00ff41',
-    background: 'from-red-900 via-black to-red-900',
-    icon: Palette
-  }
-];
-
-const ThemeSwitcher = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(0);
-
-  useEffect(() => {
-    const theme = themes[currentTheme];
-    document.documentElement.style.setProperty('--theme-primary', theme.primary);
-    document.documentElement.style.setProperty('--theme-secondary', theme.secondary);
-    document.documentElement.style.setProperty('--theme-accent', theme.accent);
-    
-    // Update CSS classes dynamically
-    const root = document.documentElement;
-    root.className = root.className.replace(/theme-\w+/g, '');
-    root.classList.add(`theme-${currentTheme}`);
-  }, [currentTheme]);
-
-  const switchTheme = (index: number) => {
-    setCurrentTheme(index);
-    setIsOpen(false);
-    
-    // Play sound effect if available
-    if ((window as any).playTypingSound) {
-      (window as any).playTypingSound();
-    }
-  };
-
-  const CurrentIcon = themes[currentTheme].icon;
-
-  return (
-    <div className="fixed top-32 right-6 z-50">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-3 rounded-full border border-cyan-400 bg-black/80 text-cyan-400 hover:bg-cyan-400/20 transition-all duration-300 hover:scale-110"
-        title="Switch Theme"
-      >
-        <CurrentIcon className="w-5 h-5" />
-      </button>
-      
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-2 bg-black/95 border border-cyan-400/30 rounded-lg p-4 backdrop-blur-sm min-w-[200px]">
-          <h3 className="text-cyan-400 font-bold mb-3 text-sm">Cyberpunk Themes</h3>
-          <div className="space-y-2">
-            {themes.map((theme, index) => {
-              const Icon = theme.icon;
-              return (
-                <button
-                  key={index}
-                  onClick={() => switchTheme(index)}
-                  className={`w-full flex items-center space-x-3 p-2 rounded transition-all duration-300 ${
-                    currentTheme === index
-                      ? 'bg-cyan-400/20 border border-cyan-400/50'
-                      : 'hover:bg-gray-800/50'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" style={{ color: theme.primary }} />
-                  <span className="text-white text-sm">{theme.name}</span>
-                  <div className="flex space-x-1 ml-auto">
-                    <div 
-                      className="w-3 h-3 rounded-full border border-gray-600"
-                      style={{ backgroundColor: theme.primary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-gray-600"
-                      style={{ backgroundColor: theme.secondary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-gray-600"
-                      style={{ backgroundColor: theme.accent }}
-                    />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default ThemeSwitcher;
+import React, { useState, useEffect } from 'react';
+import { Palette, Zap, Shield, Code } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+
+interface Theme {
+  name: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const themes: Theme[] = [
+  {
+    name: 'Matrix Green',
+    primary: '#34d399',
+    secondary: '#22d3ee',
+    accent: '#ff0040',
+    icon: Code,
+  },
+  {
+    name: 'Neon Cyan',
+    primary: '#22d3ee',
+    secondary: '#34d399',
+    accent: '#f59e0b',
+    icon: Zap,
+  },
+  {
+    name: 'Cyber Purple',
+    primary: '#8b5cf6',
+    secondary: '#22d3ee',
+    accent: '#34d399',
+    icon: Shield,
+  },
+  {
+    name: 'Alert Red',
+    primary: '#ff0040',
+    secondary: '#ff4080',
+    accent: '#34d399',
+    icon: Palette,
+  },
+];
+
+const ThemeSwitcher = () => {
+  const { playTypingSound } = useApp();
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(0);
+
+  useEffect(() => {
+    const theme = themes[currentTheme];
+    document.documentElement.style.setProperty('--theme-primary', theme.primary);
+    document.documentElement.style.setProperty('--theme-secondary', theme.secondary);
+    document.documentElement.style.setProperty('--theme-accent', theme.accent);
+
+    const root = document.documentElement;
+    root.className = root.className.replace(/theme-\w+/g, '');
+    root.classList.add(`theme-${currentTheme}`);
+  }, [currentTheme]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const close = () => setIsOpen(false);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [isOpen]);
+
+  const switchTheme = (index: number) => {
+    setCurrentTheme(index);
+    setIsOpen(false);
+    playTypingSound();
+  };
+
+  const CurrentIcon = themes[currentTheme].icon;
+
+  return (
+    <div className="relative">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        className="p-2 rounded-lg border border-white/10 bg-black/50 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-colors"
+        aria-label="Switch color theme"
+        aria-expanded={isOpen}
+      >
+        <CurrentIcon className="w-4 h-4" />
+      </button>
+
+      {isOpen && (
+        <div
+          className="absolute top-full right-0 mt-2 z-[100] bg-[#0a0e14]/98 border border-emerald-500/20 rounded-xl p-3 backdrop-blur-md min-w-[220px] shadow-xl shadow-black/50"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 className="text-emerald-400 font-mono text-[10px] tracking-wider uppercase mb-2">
+            Cyber Themes
+          </h3>
+          <div className="space-y-1">
+            {themes.map((theme, index) => {
+              const Icon = theme.icon;
+              return (
+                <button
+                  key={index}
+                  onClick={() => switchTheme(index)}
+                  className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                    currentTheme === index
+                      ? 'bg-emerald-500/15 border border-emerald-500/30'
+                      : 'hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: theme.primary }} />
+                  <span className="text-white text-xs font-mono">{theme.name}</span>
+                  <div className="flex gap-1 ml-auto shrink-0">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.primary }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.secondary }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.accent }} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ThemeSwitcher;

@@ -17,15 +17,32 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Sync repo to server
+      - name: Add server to known hosts
+        run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync deploy files to server
         run: |
           rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no" \
+            -e "ssh" \
+            --include='Dockerfile' \
+            --include='docker-compose.yml' \
+            --include='nginx.conf' \
+            --include='package.json' \
+            --include='package-lock.json' \
+            --include='src/***' \
+            --include='public/***' \
+            --include='index.html' \
+            --include='vite.config.ts' \
+            --include='tsconfig*.json' \
+            --include='tailwind.config.js' \
+            --include='postcss.config.js' \
+            --include='eslint.config.js' \
+            --exclude='*' \
             ./ ${{ secrets.USER }}@${{ secrets.HOST }}:${{ secrets.TARGET_DIR }}/
 
       - name: Build & restart container on server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
+          ssh ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
           set -e
           cd ${{ secrets.TARGET_DIR }}
           docker compose build --no-cache

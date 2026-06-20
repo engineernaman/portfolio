@@ -90,7 +90,7 @@ const GlitchEffect: React.FC<GlitchEffectProps> = ({
           
           .glitch-container-active::before {
             animation: glitch-effect-1 0.3s infinite linear alternate-reverse;
-            background: linear-gradient(90deg, transparent 0%, #ff0040 2%, transparent 8%, transparent 92%, #ff0040 98%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #00ff41 2%, transparent 8%, transparent 92%, #00ff41 98%, transparent 100%);
             mix-blend-mode: multiply;
           }
           

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
 
 interface LazyImageProps {
   src: string;
@@ -13,6 +14,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   className = '', 
   placeholder = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJDb3VyaWVyIE5ldyIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzAwZmY0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxPQURJTkcuLi48L3RleHQ+PC9zdmc+'
 }) => {
+  const { playTypingSound } = useApp();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -38,9 +40,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
   const handleLoad = () => {
     setIsLoaded(true);
-    if ((window as any).playTypingSound) {
-      (window as any).playTypingSound();
-    }
+    playTypingSound();
   };
 
   const handleError = () => {
@@ -76,8 +76,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
       {!isLoaded && !isError && isInView && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/80">
           <div className="flex flex-col items-center space-y-2">
-            <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-cyan-400 text-xs font-mono">LOADING...</span>
+            <div className="w-8 h-8 border-2 border-violet/40 border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-coral text-xs font-mono">LOADING...</span>
           </div>
         </div>
       )}

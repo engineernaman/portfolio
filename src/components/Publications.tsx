@@ -99,9 +99,9 @@ const Publications = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Research <span className="text-cyan-400">Publications</span>
+            Research <span className="text-coral">Publications</span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-green-400 mx-auto mb-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-coral to-violet mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto">
             Peer-reviewed research contributions to the cybersecurity academic community
           </p>
@@ -110,11 +110,11 @@ const Publications = () => {
         {/* Publication Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-cyan-400 mb-2">{stats.totalPublications}</div>
+            <div className="text-3xl font-bold text-coral mb-2">{stats.totalPublications}</div>
             <div className="text-gray-300">Publications</div>
           </div>
           <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border border-green-500/30 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">{stats.totalCitations}</div>
+            <div className="text-3xl font-bold text-violet mb-2">{stats.totalCitations}</div>
             <div className="text-gray-300">Citations</div>
           </div>
           <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-6 text-center">
@@ -132,7 +132,7 @@ const Publications = () => {
           {publications.map((pub, index) => (
             <div
               key={index}
-              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group"
+              className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-violet/40 transition-all duration-300 group"
             >
               <div className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-4">
@@ -147,7 +147,7 @@ const Publications = () => {
                         </span>
                         <span className={`px-2 py-1 text-xs rounded ${
                           pub.impact === 'High' 
-                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                            ? 'bg-green-500/20 text-violet border border-green-500/30'
                             : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                         }`}>
                           {pub.impact} Impact
@@ -155,12 +155,12 @@ const Publications = () => {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors duration-300 leading-tight">
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-coral transition-colors duration-300 leading-tight">
                       {pub.title}
                     </h3>
 
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center space-x-2 text-green-400">
+                      <div className="flex items-center space-x-2 text-violet">
                         <BookOpen className="w-4 h-4" />
                         <span className="text-sm">{pub.journal}</span>
                       </div>
@@ -191,7 +191,7 @@ const Publications = () => {
                       {pub.keywords.map((keyword) => (
                         <span
                           key={keyword}
-                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded text-cyan-400"
+                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded text-coral"
                         >
                           {keyword}
                         </span>
@@ -201,14 +201,14 @@ const Publications = () => {
                     <div className="flex flex-wrap items-center gap-4">
                       <a
                         href={`https://doi.org/${pub.doi}`}
-                        className="flex items-center space-x-2 text-cyan-400 hover:text-white transition-colors duration-300"
+                        className="flex items-center space-x-2 text-coral hover:text-white transition-colors duration-300"
                       >
                         <ExternalLink className="w-4 h-4" />
                         <span>View Publication</span>
                       </a>
                       <a
                         href={pub.pdfUrl}
-                        className="flex items-center space-x-2 text-green-400 hover:text-white transition-colors duration-300"
+                        className="flex items-center space-x-2 text-violet hover:text-white transition-colors duration-300"
                       >
                         <Download className="w-4 h-4" />
                         <span>Download PDF</span>

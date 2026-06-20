@@ -173,9 +173,9 @@ const Gallery = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Security <span className="text-cyan-400">Gallery</span>
+            Security <span className="text-coral">Gallery</span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-green-400 mx-auto mb-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-coral to-violet mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto">
             Visual documentation of cybersecurity projects, achievements, and professional moments
           </p>
@@ -184,13 +184,13 @@ const Gallery = () => {
         {/* Gallery Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg p-6 text-center">
-            <ImageIcon className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-cyan-400 mb-2">{galleryImages.length}</div>
+            <ImageIcon className="w-8 h-8 text-coral mx-auto mb-3" />
+            <div className="text-3xl font-bold text-coral mb-2">{galleryImages.length}</div>
             <div className="text-gray-300">Images</div>
           </div>
           <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border border-green-500/30 rounded-lg p-6 text-center">
-            <Eye className="w-8 h-8 text-green-400 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-green-400 mb-2">
+            <Eye className="w-8 h-8 text-violet mx-auto mb-3" />
+            <div className="text-3xl font-bold text-violet mb-2">
               {galleryImages.reduce((sum, img) => sum + img.views, 0).toLocaleString()}
             </div>
             <div className="text-gray-300">Total Views</div>
@@ -220,7 +220,7 @@ const Gallery = () => {
                 placeholder="Search images..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-cyan-400 focus:outline-none transition-colors duration-300"
+                className="pl-10 pr-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-violet/40 focus:outline-none transition-colors duration-300"
               />
             </div>
 
@@ -228,7 +228,7 @@ const Gallery = () => {
             <select
               value={filterTag}
               onChange={(e) => setFilterTag(e.target.value)}
-              className="px-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-cyan-400 focus:outline-none transition-colors duration-300"
+              className="px-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-violet/40 focus:outline-none transition-colors duration-300"
             >
               <option value="all">All Tags</option>
               {allTags.map(tag => (
@@ -240,7 +240,7 @@ const Gallery = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'views')}
-              className="px-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-cyan-400 focus:outline-none transition-colors duration-300"
+              className="px-4 py-2 bg-black/60 border border-cyan-500/30 rounded-lg text-white focus:border-violet/40 focus:outline-none transition-colors duration-300"
             >
               <option value="date">Sort by Date</option>
               <option value="name">Sort by Name</option>
@@ -256,7 +256,7 @@ const Gallery = () => {
                 className={`p-2 rounded transition-all duration-300 ${
                   viewMode === 'grid' 
                     ? 'bg-cyan-500 text-black' 
-                    : 'text-cyan-400 hover:text-white'
+                    : 'text-coral hover:text-white'
                 }`}
               >
                 <Grid className="w-4 h-4" />
@@ -266,7 +266,7 @@ const Gallery = () => {
                 className={`p-2 rounded transition-all duration-300 ${
                   viewMode === 'list' 
                     ? 'bg-cyan-500 text-black' 
-                    : 'text-cyan-400 hover:text-white'
+                    : 'text-coral hover:text-white'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -287,7 +287,7 @@ const Gallery = () => {
             {filteredImages.map((image, index) => (
               <div
                 key={image.id}
-                className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group cursor-pointer hover:scale-105"
+                className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-violet/40 transition-all duration-300 group cursor-pointer hover:scale-105"
                 onClick={() => setSelectedImage(index)}
               >
                 <div className="relative overflow-hidden">
@@ -312,7 +312,7 @@ const Gallery = () => {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-coral transition-colors duration-300">
                     {image.title}
                   </h3>
                   <p className="text-gray-300 text-sm mb-3 line-clamp-2">{image.description}</p>
@@ -336,7 +336,7 @@ const Gallery = () => {
                       </span>
                     ))}
                     {image.tags.length > 3 && (
-                      <span className="px-2 py-1 text-xs text-cyan-400">
+                      <span className="px-2 py-1 text-xs text-coral">
                         +{image.tags.length - 3}
                       </span>
                     )}
@@ -350,7 +350,7 @@ const Gallery = () => {
             {filteredImages.map((image, index) => (
               <div
                 key={image.id}
-                className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-cyan-400 transition-all duration-300 group cursor-pointer"
+                className="bg-black/40 border border-cyan-500/30 rounded-lg overflow-hidden hover:border-violet/40 transition-all duration-300 group cursor-pointer"
                 onClick={() => setSelectedImage(index)}
               >
                 <div className="flex flex-col md:flex-row">
@@ -364,10 +364,10 @@ const Gallery = () => {
                   <div className="md:w-2/3 p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-coral transition-colors duration-300">
                           {image.title}
                         </h3>
-                        <p className="text-green-400 text-sm mb-2">{image.category}</p>
+                        <p className="text-violet text-sm mb-2">{image.category}</p>
                       </div>
                       <div className="flex items-center space-x-4 text-sm text-gray-400">
                         <div className="flex items-center space-x-1">
@@ -397,7 +397,7 @@ const Gallery = () => {
                       {image.tags.map(tag => (
                         <span
                           key={tag}
-                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded text-cyan-400"
+                          className="px-2 py-1 text-xs bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded text-coral"
                         >
                           {tag}
                         </span>
@@ -417,7 +417,7 @@ const Gallery = () => {
               {/* Close Button */}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-cyan-400 transition-colors duration-300"
+                className="absolute top-4 right-4 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-violet/40 transition-colors duration-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -425,13 +425,13 @@ const Gallery = () => {
               {/* Navigation Buttons */}
               <button
                 onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-cyan-400 transition-colors duration-300"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-violet/40 transition-colors duration-300"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-cyan-400 transition-colors duration-300"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black/60 border border-cyan-500/30 rounded-full text-white hover:border-violet/40 transition-colors duration-300"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
@@ -450,11 +450,11 @@ const Gallery = () => {
                       <h3 className="text-2xl font-bold text-white mb-2">
                         {filteredImages[selectedImage].title}
                       </h3>
-                      <p className="text-cyan-400 mb-2">{filteredImages[selectedImage].category}</p>
+                      <p className="text-coral mb-2">{filteredImages[selectedImage].category}</p>
                       <p className="text-gray-300">{filteredImages[selectedImage].description}</p>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <button className="flex items-center space-x-2 text-green-400 hover:text-white transition-colors duration-300">
+                      <button className="flex items-center space-x-2 text-violet hover:text-white transition-colors duration-300">
                         <Download className="w-4 h-4" />
                         <span>Download</span>
                       </button>
@@ -470,11 +470,11 @@ const Gallery = () => {
                       <h4 className="text-lg font-bold text-white mb-3">Details</h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center space-x-2 text-gray-300">
-                          <Calendar className="w-4 h-4 text-cyan-400" />
+                          <Calendar className="w-4 h-4 text-coral" />
                           <span>Uploaded: {filteredImages[selectedImage].uploadDate} at {filteredImages[selectedImage].uploadTime}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-gray-300">
-                          <Eye className="w-4 h-4 text-green-400" />
+                          <Eye className="w-4 h-4 text-violet" />
                           <span>Views: {filteredImages[selectedImage].views.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-gray-300">
@@ -500,7 +500,7 @@ const Gallery = () => {
                       {filteredImages[selectedImage].tags.map(tag => (
                         <span
                           key={tag}
-                          className="px-3 py-1 text-sm bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded-full text-cyan-400"
+                          className="px-3 py-1 text-sm bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-cyan-500/30 rounded-full text-coral"
                         >
                           {tag}
                         </span>
