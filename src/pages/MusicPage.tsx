@@ -254,7 +254,7 @@ const MusicPage = () => {
                         {playing ? 'Streaming · background active' : 'Paused'}
                       </p>
                       <p className="text-xs text-slate/50 text-center px-4">
-                        Use the pause button bottom-right anywhere on the site
+                        Hover the grip icon bottom-right for music controls anywhere on the site
                       </p>
                       {!playerReady && playing && (
                         <p className="text-xs text-slate/40 animate-pulse">Buffering…</p>

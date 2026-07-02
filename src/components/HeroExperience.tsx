@@ -1,8 +1,7 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { FlaskConical, Radar, Sparkles, ChevronDown } from 'lucide-react';
 import MagneticButton from './ui/MagneticButton';
-import HeroSceneCanvas from './three/HeroSceneCanvas';
 import { useApp } from '../context/AppContext';
 import { profile, heroStats, governmentClientsSummary } from '../data/portfolio';
 
@@ -14,28 +13,28 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const { openIntelLab } = useApp();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
-  const textY = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : 50]);
+  const cardY = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : 40]);
+  const cardOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.15]);
 
   return (
-    <section
-      ref={sectionRef}
-      id="home"
-      className="relative min-h-screen flex flex-col lg:flex-row items-center gap-8 pt-20 pb-12 lg:pt-24 lg:pb-16 px-6 sm:px-10 lg:px-14"
-    >
-      {/* Left — details card */}
-      <motion.div style={{ y: textY }} className="relative z-20 w-full lg:w-[46%] shrink-0 pointer-events-none">
+    <section ref={sectionRef} id="home" className="relative min-h-screen flex items-center">
+      {/* Left overlay card — 3D fills the full viewport behind via ImmersiveCanvas */}
+      <motion.div
+        style={{ y: cardY, opacity: cardOpacity }}
+        className="relative z-20 w-full max-w-xl px-6 sm:px-10 lg:px-14 pt-32 pb-16 pointer-events-none"
+      >
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0, x: -24 }}
+          initial={reducedMotion ? false : { opacity: 0, x: -32 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-2xl border border-emerald-500/30 bg-[rgba(6,10,16,0.88)] backdrop-blur-xl p-6 sm:p-8 shadow-[0_16px_64px_rgba(0,0,0,0.55)] pointer-events-auto"
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-2xl border border-emerald-500/30 bg-[rgba(6,10,16,0.88)] backdrop-blur-xl p-6 sm:p-8 shadow-[0_20px_80px_rgba(0,0,0,0.55)] pointer-events-auto"
         >
           <p className="font-mono text-[11px] tracking-[0.22em] text-emerald-400 uppercase mb-5 font-medium flex items-center gap-2">
             <Sparkles className="w-3 h-3" />
             {profile.brand} · next-gen tech leadership
           </p>
 
-          <h1 className="font-display text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.08] tracking-tight mb-4">
+          <h1 className="font-display text-[clamp(2rem,5.5vw,3.6rem)] font-bold leading-[1.08] tracking-tight mb-4">
             <span className="block text-readable">Soumy Naman</span>
             <span className="block bg-gradient-to-r from-emerald-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent mt-1">
               Srivastava
@@ -79,7 +78,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
                 key={s.label}
                 initial={reducedMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.07 }}
+                transition={{ delay: 0.35 + i * 0.07 }}
                 className="rounded-lg border border-white/10 bg-black/30 p-3 sm:p-4 text-center"
               >
                 <div className="font-display text-xl sm:text-2xl font-bold text-readable">{s.value}</div>
@@ -89,20 +88,13 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           </div>
 
           <p className="text-[10px] tracking-[0.28em] text-emerald-400/60 font-mono uppercase flex items-center gap-2">
-            scroll <ChevronDown className="w-3 h-3 animate-bounce" /> · drag 3D nodes below
+            scroll <ChevronDown className="w-3 h-3 animate-bounce" /> · drag 3D nodes in the scene →
           </p>
         </motion.div>
       </motion.div>
 
-      {/* Right — guaranteed visible live 3D canvas */}
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-20 w-full lg:w-[54%] flex-1 pointer-events-auto min-h-[320px]"
-      >
-        <HeroSceneCanvas reducedMotion={reducedMotion} />
-      </motion.div>
+      {/* Right interaction zone — drag/orbit the live 3D scene */}
+      <div className="hidden lg:block flex-1 min-h-screen pointer-events-auto" aria-hidden />
     </section>
   );
 };

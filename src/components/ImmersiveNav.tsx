@@ -61,12 +61,14 @@ const ImmersiveNav = ({ activePage }: ImmersiveNavProps) => {
   const { playTypingSound, openIntelLab } = useApp();
   const [portalOpen, setPortalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
+      setScrolled(window.scrollY > 48);
       if (activePage !== 'home') return;
       const ids = ['home', ...sections.map((s) => s.id)];
-      const pos = window.scrollY + 160;
+      const pos = window.scrollY + 180;
       for (const id of ids) {
         const el = document.getElementById(id);
         if (el && pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) {
@@ -113,12 +115,13 @@ const ImmersiveNav = ({ activePage }: ImmersiveNavProps) => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none px-4 sm:px-6 py-3">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 pointer-events-none px-4 sm:px-6 transition-all duration-300 ${
+          scrolled ? 'py-2.5 bg-[rgba(1,2,8,0.92)] backdrop-blur-xl border-b border-white/8 shadow-[0_8px_32px_rgba(0,0,0,0.45)]' : 'py-3.5'
+        }`}
+      >
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
-          <a
-            href={pageToHash('home')}
-            className="pointer-events-auto flex items-center gap-2 group"
-          >
+          <a href={pageToHash('home')} className="pointer-events-auto flex items-center gap-2 group">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-emerald-500/30 blur-md group-hover:bg-cyan-500/30 transition-colors" />
               <div className="relative w-9 h-9 rounded-full border border-emerald-500/40 bg-[rgba(6,10,16,0.85)] backdrop-blur-xl flex items-center justify-center">
@@ -150,48 +153,6 @@ const ImmersiveNav = ({ activePage }: ImmersiveNavProps) => {
       </header>
 
       {activePage === 'home' && <SectionRail activeSection={activeSection} />}
-
-      {/* Floating tool orbs */}
-      <nav className="fixed bottom-6 right-4 sm:right-6 z-[55] flex flex-col gap-2 pointer-events-auto" aria-label="Quick tools">
-        {TOOL_ITEMS.map((tool) => {
-          const Icon = tool.icon;
-          const active = activePage === tool.page;
-          return (
-            <a
-              key={tool.id}
-              href={tool.href}
-              onClick={() => playTypingSound()}
-              className={`group relative flex items-center justify-center w-11 h-11 rounded-full border backdrop-blur-xl transition-all ${
-                active
-                  ? 'border-emerald-400/50 bg-emerald-500/20 shadow-[0_0_24px_rgba(52,211,153,0.35)]'
-                  : 'border-white/12 bg-[rgba(6,10,16,0.88)] hover:border-cyan-500/35 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]'
-              }`}
-              title={tool.label}
-            >
-              <Icon className={`w-4 h-4 ${active ? 'text-emerald-300' : 'text-slate/70 group-hover:text-cyan-300'}`} />
-            </a>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => {
-            playTypingSound();
-            openIntelLab();
-          }}
-          className="flex items-center justify-center w-11 h-11 rounded-full border border-cyan-500/30 bg-[rgba(6,10,16,0.88)] backdrop-blur-xl hover:bg-cyan-500/15 transition-colors"
-          title="Intel Lab"
-        >
-          <FlaskConical className="w-4 h-4 text-cyan-400" />
-        </button>
-        <a
-          href="#visitor-scan"
-          onClick={() => playTypingSound()}
-          className="flex items-center justify-center w-11 h-11 rounded-full border border-white/12 bg-[rgba(6,10,16,0.88)] backdrop-blur-xl hover:border-emerald-500/30 transition-colors"
-          title="Visitor scan"
-        >
-          <Radar className="w-4 h-4 text-slate/60 hover:text-emerald-300" />
-        </a>
-      </nav>
 
       <AnimatePresence>
         {portalOpen && (

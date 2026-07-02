@@ -20,7 +20,7 @@ const ImmersiveHud = () => {
   if (!pastHero) return null;
 
   return (
-    <div className="fixed bottom-28 right-6 z-40 pointer-events-none font-mono text-[10px] tracking-wider text-readable-dim space-y-1 hidden md:block max-w-[200px]">
+    <div className="fixed top-24 left-6 z-40 pointer-events-none font-mono text-[10px] tracking-wider text-readable-dim space-y-1 hidden md:block max-w-[200px]">
       <p className="text-emerald-400/80 uppercase tracking-[0.12em] font-medium">{sector}</p>
       <p>SCROLL · sectors · CLICK nodes · DRAG objects</p>
       <p className="text-readable-dim/60 tabular-nums">{pct.toString().padStart(3, '0')}% depth</p>

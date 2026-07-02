@@ -45,7 +45,7 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
       <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [0, 0.5, 7], fov: 55 }}
+          camera={{ position: [1.2, 0.4, 5.5], fov: 52 }}
           gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
           style={{ width: '100%', height: '100%' }}
           eventSource={document.body}

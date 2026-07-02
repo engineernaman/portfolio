@@ -29,6 +29,7 @@ import CyberChefPage from './pages/CyberChefPage';
 import { AppProvider, useApp } from './context/AppContext';
 import { MusicProvider } from './context/MusicContext';
 import GlobalMusicPlayer from './components/GlobalMusicPlayer';
+import QuickActionDock from './components/QuickActionDock';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { useSitePage } from './hooks/useSitePage';
@@ -150,6 +151,7 @@ function AppContent() {
       )}
 
       <GlobalMusicPlayer />
+      <QuickActionDock />
       <IntelLab open={intelLabOpen} onClose={closeIntelLab} />
       <VisitorSessionBadge />
       <NotificationSystem />
