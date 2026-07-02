@@ -21,6 +21,7 @@ import MotionBackdrop from './components/MotionBackdrop';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
 import LoadingScreen from './components/LoadingScreen';
+import HomeScrollBackdrop from './components/HomeScrollBackdrop';
 import ImmersiveCanvas from './components/three/ImmersiveCanvas';
 import MusicPage from './pages/MusicPage';
 import CyberChefPage from './pages/CyberChefPage';
@@ -85,7 +86,7 @@ function AppContent() {
   }, [isHome, visitorProfile?.ip, setVisitorProfile]);
 
   return (
-    <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
+    <div className="min-h-screen bg-transparent text-slate font-body overflow-x-hidden">
       {!booted && (
         <LoadingScreen
           onComplete={() => {
@@ -100,11 +101,16 @@ function AppContent() {
         />
       )}
 
-      {isHome && show3d && (
-        <ImmersiveCanvas
-          reducedMotion={reducedMotion}
-          onUnavailable={() => setShow3d(false)}
-        />
+      {isHome && (
+        <>
+          <HomeScrollBackdrop reducedMotion={reducedMotion} />
+          {show3d && (
+            <ImmersiveCanvas
+              reducedMotion={reducedMotion}
+              onUnavailable={() => setShow3d(false)}
+            />
+          )}
+        </>
       )}
       {!isHome && (
         <MotionBackdrop reducedMotion={reducedMotion} />

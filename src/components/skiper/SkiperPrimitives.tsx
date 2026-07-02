@@ -52,7 +52,7 @@ interface SkiperMarqueeProps {
 export function SkiperMarquee({ items, className }: SkiperMarqueeProps) {
   const row = [...items, ...items];
   return (
-    <div className={cn('overflow-hidden border-y border-white/10 bg-[rgba(6,10,16,0.95)] py-3', className)}>
+    <div className={cn('overflow-hidden border-y border-white/10 bg-[rgba(6,10,16,0.35)] backdrop-blur-sm py-3', className)}>
       <div className="flex animate-marquee whitespace-nowrap">
         {row.map((item, i) => (
           <span key={i} className="mx-8 text-xs font-mono tracking-[0.2em] text-readable-dim uppercase">

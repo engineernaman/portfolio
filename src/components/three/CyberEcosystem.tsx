@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Grid, Stars, Sparkles, Text, Line, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import InteractiveNode from './InteractiveNode';
-import PostFX from './PostFX';
+import SafePostFX from './SafePostFX';
 import SectionVignettes from './SectionVignettes';
 import SpeakerPhotoGallery3D from './SpeakerPhotoGallery3D';
 import NexusCore from './NexusCore';
@@ -300,7 +300,7 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
     <Stars radius={100} depth={60} count={lowPower ? 1500 : 4000} factor={4} saturation={0} fade speed={0.55} />
     <Sparkles count={lowPower ? 80 : 200} scale={[28, 14, 50]} position={[5, 0, -8]} size={3.5} speed={0.45} color="#22d3ee" opacity={0.55} />
 
-      <PostFX lowPower={lowPower} />
+      <SafePostFX lowPower={lowPower} />
     </>
   );
 };
