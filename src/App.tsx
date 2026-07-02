@@ -1,233 +1,128 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 
 import Navbar from './components/Navbar';
-
 import About from './components/About';
-
 import Experience from './components/Experience';
-
 import Ventures from './components/Ventures';
-
 import Speaking from './components/Speaking';
-
 import Research from './components/Research';
-
 import Training from './components/Training';
-
 import Recognition from './components/Recognition';
-
 import Certifications from './components/Certifications';
-
 import Contact from './components/Contact';
-
 import Footer from './components/Footer';
-
-import LoadingScreen from './components/LoadingScreen';
-
 import HackingTerminal from './components/HackingTerminal';
-
 import NotificationSystem from './components/NotificationSystem';
-
 import MatrixRain from './components/MatrixRain';
-
 import AnimatedSection from './components/AnimatedSection';
-
 import HeroExperience from './components/HeroExperience';
-
 import DomainMarquee from './components/DomainMarquee';
-
-import ImmersiveCanvas from './components/three/ImmersiveCanvas';
-
+import MotionBackdrop from './components/MotionBackdrop';
 import ImmersiveHud from './components/ImmersiveHud';
-
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
 
 import { AppProvider, useApp } from './context/AppContext';
-
 import { useReducedMotion } from './hooks/useReducedMotion';
-
 import { useSmoothScroll } from './hooks/useSmoothScroll';
+import { useProgressive3D } from './hooks/useProgressive3D';
 
 import { motion, useScroll, useSpring } from 'framer-motion';
 
-
+const ImmersiveCanvas = lazy(() => import('./components/three/ImmersiveCanvas'));
 
 function AppContent() {
-
-  const [isLoading, setIsLoading] = useState(() => !sessionStorage.getItem('portfolio-skip-intro'));
-
   const [showMatrix, setShowMatrix] = useState(false);
-
+  const [show3d, setShow3d] = useState(false);
   const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab } = useApp();
+  const progressive3d = useProgressive3D(reducedMotion);
 
-
-
-  useSmoothScroll(!isLoading, reducedMotion);
+  useSmoothScroll(true, reducedMotion);
 
   useEffect(() => {
-    if (isLoading) return;
     if (window.location.hash === '#intel-lab') {
       openIntelLab();
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
-  }, [isLoading, openIntelLab]);
-
-
-
-  const { scrollYProgress } = useScroll();
-
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
-
-
-
-  const handleLoadingComplete = () => {
-
-    sessionStorage.setItem('portfolio-skip-intro', '1');
-
-    setIsLoading(false);
-
-  };
-
-
+  }, [openIntelLab]);
 
   useEffect(() => {
+    if (progressive3d) setShow3d(true);
+  }, [progressive3d]);
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  useEffect(() => {
     registerTriggerMatrix(() => setShowMatrix(true));
-
   }, [registerTriggerMatrix]);
 
-
-
-  if (isLoading) {
-
-    return <LoadingScreen onComplete={handleLoadingComplete} reducedMotion={reducedMotion} />;
-
-  }
-
-
-
   return (
+    <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
+      <MotionBackdrop reducedMotion={reducedMotion} />
 
-    <div className="min-h-screen bg-transparent text-slate font-body overflow-x-hidden">
-
-      <ImmersiveCanvas reducedMotion={reducedMotion} />
-
-
+      {show3d && (
+        <Suspense fallback={null}>
+          <ImmersiveCanvas reducedMotion={reducedMotion} onUnavailable={() => setShow3d(false)} />
+        </Suspense>
+      )}
 
       <motion.div
-
         className="fixed top-0 left-0 right-0 h-px bg-emerald-500/60 origin-left z-[60]"
-
         style={{ scaleX }}
-
       />
 
-
-
       <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-
         <div className="pointer-events-auto">
-
           <Navbar />
-
         </div>
-
       </div>
-
-
 
       <ImmersiveHud />
 
-
-
       <div className="relative z-10">
-
         <HeroExperience />
-
         <DomainMarquee />
 
-
-
         <div className="relative">
-
           <div
-
-            className="absolute inset-0 bg-gradient-to-b from-void/40 via-void/65 to-void/95 pointer-events-none"
-
+            className="absolute inset-0 bg-gradient-to-b from-void/30 via-void/55 to-void/92 pointer-events-none"
             aria-hidden
-
           />
-
           <div className="relative">
-
             <AnimatedSection><About /></AnimatedSection>
-
             <AnimatedSection><Experience /></AnimatedSection>
-
             <AnimatedSection><Ventures /></AnimatedSection>
-
             <AnimatedSection><Speaking /></AnimatedSection>
-
             <AnimatedSection><Research /></AnimatedSection>
-
             <AnimatedSection><Training /></AnimatedSection>
-
             <AnimatedSection><Recognition /></AnimatedSection>
-
             <AnimatedSection><Certifications /></AnimatedSection>
-
             <AnimatedSection><Contact /></AnimatedSection>
-
             <Footer />
-
           </div>
-
         </div>
-
       </div>
 
-
-
       <IntelLab open={intelLabOpen} onClose={closeIntelLab} />
-
       <VisitorSessionBadge />
-
       <NotificationSystem />
-
       <HackingTerminal />
-
       {!reducedMotion && (
-
         <MatrixRain isActive={showMatrix} onComplete={() => setShowMatrix(false)} />
-
       )}
-
     </div>
-
   );
-
 }
 
-
-
 function App() {
-
   const reducedMotion = useReducedMotion();
 
   return (
-
     <AppProvider reducedMotion={reducedMotion}>
-
       <AppContent />
-
     </AppProvider>
-
   );
-
 }
 
-
-
 export default App;
-
