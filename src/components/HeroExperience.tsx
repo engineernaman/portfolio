@@ -1,11 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { FlaskConical, Radar } from 'lucide-react';
 import { animate, stagger } from 'animejs';
 import MagneticButton from './ui/MagneticButton';
 import { useApp } from '../context/AppContext';
 import { profile, heroStats, governmentClientsSummary } from '../data/portfolio';
 
-const HeroExperience = () => {
+const HeroPortal3D = lazy(() => import('./three/HeroPortal3D'));
+
+interface HeroExperienceProps {
+  reducedMotion?: boolean;
+}
+
+const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
   const played = useRef(false);
   const { openIntelLab } = useApp();
 
@@ -38,18 +44,18 @@ const HeroExperience = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0">
-      <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 z-10 pointer-events-none" aria-hidden>
-        <div className="motion-hero-ring w-[min(36vw,320px)] h-[min(36vw,320px)] rounded-full border border-emerald-500/20" />
-        <div className="motion-hero-ring-inner absolute inset-8 rounded-full border border-cyan-400/15" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-emerald-400/80 shadow-[0_0_24px_rgba(52,211,153,0.6)]" />
-        </div>
+      <div className="hidden md:flex absolute right-[2%] lg:right-[4%] xl:right-[8%] top-1/2 -translate-y-1/2 z-20 w-[min(46vw,400px)] h-[min(46vw,400px)] items-center justify-center pointer-events-none">
+        <Suspense
+          fallback={
+            <div className="w-full h-full rounded-full border border-emerald-500/20 animate-pulse" aria-hidden />
+          }
+        >
+          <HeroPortal3D reducedMotion={reducedMotion} />
+        </Suspense>
       </div>
 
-      <div className="relative z-20 w-full max-w-xl px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
-        <div
-          className="rounded-2xl border border-emerald-500/20 bg-[rgba(10,14,22,0.96)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
-        >
+      <div className="relative z-30 w-full max-w-xl px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
+        <div className="rounded-2xl border border-emerald-500/20 bg-[rgba(10,14,22,0.88)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
           <p className="hero-line font-mono text-[11px] tracking-[0.2em] text-emerald-400 uppercase mb-5 opacity-0 font-medium">
             {profile.brand} · security & technology
           </p>
