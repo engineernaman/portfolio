@@ -1,17 +1,15 @@
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { FlaskConical, Radar } from 'lucide-react';
 import { animate, stagger } from 'animejs';
 import MagneticButton from './ui/MagneticButton';
 import { useApp } from '../context/AppContext';
 import { profile, heroStats, governmentClientsSummary } from '../data/portfolio';
 
-const HeroPortal3D = lazy(() => import('./three/HeroPortal3D'));
-
 interface HeroExperienceProps {
   reducedMotion?: boolean;
 }
 
-const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
+const HeroExperience = ({ reducedMotion: _reducedMotion = false }: HeroExperienceProps) => {
   const played = useRef(false);
   const { openIntelLab } = useApp();
 
@@ -44,18 +42,8 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0">
-      <div className="hidden md:flex absolute right-[2%] lg:right-[4%] xl:right-[8%] top-1/2 -translate-y-1/2 z-20 w-[min(46vw,400px)] h-[min(46vw,400px)] items-center justify-center pointer-events-none">
-        <Suspense
-          fallback={
-            <div className="w-full h-full rounded-full border border-emerald-500/20 animate-pulse" aria-hidden />
-          }
-        >
-          <HeroPortal3D reducedMotion={reducedMotion} />
-        </Suspense>
-      </div>
-
       <div className="relative z-30 w-full max-w-xl px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
-        <div className="rounded-2xl border border-emerald-500/20 bg-[rgba(10,14,22,0.88)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
+        <div className="rounded-2xl border border-emerald-500/25 bg-[rgba(6,10,16,0.72)] backdrop-blur-lg p-6 sm:p-8 shadow-[0_8px_48px_rgba(0,0,0,0.45)]">
           <p className="hero-line font-mono text-[11px] tracking-[0.2em] text-emerald-400 uppercase mb-5 opacity-0 font-medium">
             {profile.brand} · security & technology
           </p>
@@ -77,7 +65,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           </p>
 
           <p
-            className="hero-line text-sm text-readable-muted leading-relaxed mb-6 opacity-0 font-body border border-white/10 rounded-lg p-3.5 bg-black/40 line-clamp-3"
+            className="hero-line text-sm text-readable-muted leading-relaxed mb-6 opacity-0 font-body border border-white/10 rounded-lg p-3.5 bg-black/30 line-clamp-3"
             title={governmentClientsSummary}
           >
             <span className="text-emerald-400 font-medium">Gov clients:</span> {governmentClientsSummary}
@@ -107,7 +95,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
             {heroStats.map((s) => (
               <div
                 key={s.label}
-                className="hero-stat opacity-0 rounded-lg border border-white/10 bg-black/30 p-3 sm:p-4 text-center"
+                className="hero-stat opacity-0 rounded-lg border border-white/10 bg-black/25 p-3 sm:p-4 text-center"
               >
                 <div className="font-display text-xl sm:text-2xl font-bold text-readable">{s.value}</div>
                 <div className="text-[10px] text-readable-dim font-body font-medium mt-1.5 leading-tight">
@@ -118,7 +106,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           </div>
 
           <p className="text-[10px] tracking-[0.25em] text-emerald-400/50 font-mono uppercase">
-            scroll ↓ · enter the grid
+            scroll ↓ · enter the ecosystem
           </p>
         </div>
       </div>

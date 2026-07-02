@@ -1,6 +1,6 @@
 import { Component, Suspense, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
-import CyberCommandWorld from './CyberCommandWorld';
+import CyberEcosystem from './CyberEcosystem';
 import { detectWebGL } from '../../lib/webglDetect';
 import { createWebGLRenderer } from '../../lib/webglRenderer';
 
@@ -45,7 +45,7 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
     (canvas: HTMLCanvasElement) =>
       createWebGLRenderer(canvas, {
         antialias: !lowPower,
-        alpha: true,
+        alpha: false,
         prefersWebGL1: webgl.prefersWebGL1,
       }),
     [lowPower, webgl.prefersWebGL1]
@@ -59,20 +59,20 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
   if (webgl.capability === 'none' || failed) return null;
 
   return (
-    <div className="fixed inset-0 z-[5] pointer-events-none" id="immersive-canvas" aria-hidden>
+    <div className="fixed inset-0 z-[2]" id="immersive-canvas">
       <CanvasErrorBoundary onFail={handleFail}>
         <Canvas
           gl={createRenderer}
           shadows={!lowPower}
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [2.5, 1.5, 9], fov: 55 }}
+          camera={{ position: [3.5, 1.4, 9], fov: 50 }}
           performance={{ min: 0.5 }}
-          style={{ background: 'transparent', pointerEvents: 'auto' }}
+          style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
           eventSource={document.body}
           eventPrefix="client"
         >
           <Suspense fallback={null}>
-            <CyberCommandWorld lowPower={lowPower} />
+            <CyberEcosystem lowPower={lowPower} />
           </Suspense>
         </Canvas>
       </CanvasErrorBoundary>

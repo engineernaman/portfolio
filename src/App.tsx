@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import Navbar from './components/Navbar';
 import About from './components/About';
@@ -21,6 +21,8 @@ import MotionBackdrop from './components/MotionBackdrop';
 import ImmersiveHud from './components/ImmersiveHud';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
+import AmbientPlayer from './components/AmbientPlayer';
+import ImmersiveCanvas from './components/three/ImmersiveCanvas';
 
 import { AppProvider, useApp } from './context/AppContext';
 import { useReducedMotion } from './hooks/useReducedMotion';
@@ -29,11 +31,9 @@ import { detectWebGL } from './lib/webglDetect';
 
 import { motion, useScroll, useSpring } from 'framer-motion';
 
-const ImmersiveCanvas = lazy(() => import('./components/three/ImmersiveCanvas'));
-
 function AppContent() {
   const [showMatrix, setShowMatrix] = useState(false);
-  const [showScrollWorld, setShowScrollWorld] = useState(false);
+  const [show3d, setShow3d] = useState(true);
   const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab } = useApp();
   const webgl = useMemo(() => detectWebGL(), []);
 
@@ -47,8 +47,9 @@ function AppContent() {
   }, [openIntelLab]);
 
   useEffect(() => {
-    if (reducedMotion || webgl.capability === 'none') return;
-    setShowScrollWorld(true);
+    if (reducedMotion || webgl.capability === 'none') {
+      setShow3d(false);
+    }
   }, [reducedMotion, webgl.capability]);
 
   const { scrollYProgress } = useScroll();
@@ -60,15 +61,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
-      <MotionBackdrop reducedMotion={reducedMotion} />
-
-      {showScrollWorld && (
-        <Suspense fallback={null}>
-          <ImmersiveCanvas
-            reducedMotion={reducedMotion}
-            onUnavailable={() => setShowScrollWorld(false)}
-          />
-        </Suspense>
+      {show3d ? (
+        <ImmersiveCanvas
+          reducedMotion={reducedMotion}
+          onUnavailable={() => setShow3d(false)}
+        />
+      ) : (
+        <MotionBackdrop reducedMotion={reducedMotion} />
       )}
 
       <motion.div
@@ -83,16 +82,14 @@ function AppContent() {
       </div>
 
       <ImmersiveHud />
+      <AmbientPlayer />
 
-      <div className="relative z-10">
+      <div className="relative z-10 pointer-events-none">
         <HeroExperience reducedMotion={reducedMotion} />
         <DomainMarquee />
 
-        <div className="relative">
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-void/25 to-void/70 pointer-events-none"
-            aria-hidden
-          />
+        <div className="relative pointer-events-auto">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/15 to-void/55 pointer-events-none" aria-hidden />
           <div className="relative">
             <AnimatedSection><About /></AnimatedSection>
             <AnimatedSection><Experience /></AnimatedSection>
