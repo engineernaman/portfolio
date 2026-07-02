@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import InteractiveNode from './InteractiveNode';
 import PostFX from './PostFX';
 import SectionVignettes from './SectionVignettes';
+import SpeakerPhotoGallery3D from './SpeakerPhotoGallery3D';
 import { useScrollProgress } from '../../hooks/useScrollProgress';
 
 export const WORLD_SECTORS = [
@@ -58,9 +59,9 @@ function CinematicCamera() {
 
     state.camera.position.lerp(new THREE.Vector3(x, y, z), 0.045);
     lookAt.current.set(
-      THREE.MathUtils.lerp(5.5, 5.5 + t * 0.5, t),
-      THREE.MathUtils.lerp(0.3, 0, t),
-      THREE.MathUtils.lerp(-2, -18 - t * 14, t)
+      THREE.MathUtils.lerp(5.8, 5.5 + t * 0.5, t),
+      THREE.MathUtils.lerp(0.5, 0, t),
+      THREE.MathUtils.lerp(0, -18 - t * 14, t)
     );
     state.camera.lookAt(lookAt.current);
   });
@@ -300,6 +301,7 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       <spotLight position={[4, -6, -12]} angle={0.5} penumbra={1} intensity={0.8} color="#6366f1" />
 
       <CinematicCamera />
+      <SpeakerPhotoGallery3D lowPower={lowPower} />
       <ShieldCore />
       <DataNetwork lowPower={lowPower} />
       <StreamParticles count={lowPower ? 60 : 140} />

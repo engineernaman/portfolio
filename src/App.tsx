@@ -21,7 +21,7 @@ import MotionBackdrop from './components/MotionBackdrop';
 import ImmersiveHud from './components/ImmersiveHud';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
-import AmbientPlayer from './components/AmbientPlayer';
+import MusicPlayer from './components/MusicPlayer';
 import ImmersiveCanvas from './components/three/ImmersiveCanvas';
 
 import { AppProvider, useApp } from './context/AppContext';
@@ -82,7 +82,7 @@ function AppContent() {
       </div>
 
       <ImmersiveHud />
-      <AmbientPlayer />
+      <MusicPlayer />
 
       <div className="relative z-10 pointer-events-none">
         <HeroExperience reducedMotion={reducedMotion} />
