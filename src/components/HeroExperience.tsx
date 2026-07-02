@@ -4,6 +4,7 @@ import { Radar, Sparkles } from 'lucide-react';
 import AnimatedButton from '@/components/ui/animated-button';
 import { TextReveal } from '@/lib/animmaster';
 import { SkiperLink } from '@/components/skiper/SkiperPrimitives';
+import HeroRightStage from '@/components/HeroRightStage';
 import { useApp } from '@/context/AppContext';
 import { profile, heroStats, governmentClientsSummary } from '@/data/portfolio';
 
@@ -89,13 +90,10 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           </div>
         </motion.div>
 
-        {/* Right side: 3D network stack lives in ImmersiveCanvas — transparent spacer only */}
-        <div className="hidden lg:block flex-1 min-h-[420px]" aria-hidden />
+        <div className="hidden lg:flex flex-1 items-center justify-center px-6 lg:px-8 lg:pr-10 pt-24 pb-12 min-h-[420px] pointer-events-auto">
+          <HeroRightStage reducedMotion={reducedMotion} />
+        </div>
       </div>
-
-      <p className="hidden lg:block absolute bottom-8 right-12 font-mono text-[10px] tracking-wide text-readable-dim/70 pointer-events-none">
-        Hover network stack to disassemble
-      </p>
     </section>
   );
 };

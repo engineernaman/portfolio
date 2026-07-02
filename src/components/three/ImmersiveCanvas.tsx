@@ -1,6 +1,6 @@
 import { Component, Suspense, useState, useEffect, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
-import PortfolioWorld from './PortfolioWorld';
+import CyberEcosystem from './CyberEcosystem';
 
 class CanvasErrorBoundary extends Component<
   { children: ReactNode; onFail: () => void },
@@ -45,14 +45,14 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
       <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [1.2, 0.4, 5.5], fov: 52 }}
+          camera={{ position: [-2.2, 0.6, 7.5], fov: 48 }}
           gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
           style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
           eventSource={document.body}
           eventPrefix="client"
         >
           <Suspense fallback={null}>
-            <PortfolioWorld lowPower={lowPower} />
+            <CyberEcosystem lowPower={lowPower} />
           </Suspense>
         </Canvas>
       </CanvasErrorBoundary>

@@ -7,7 +7,6 @@ import PostFX from './PostFX';
 import SectionVignettes from './SectionVignettes';
 import SpeakerPhotoGallery3D from './SpeakerPhotoGallery3D';
 import NexusCore from './NexusCore';
-import HeroSentinel from './HeroSentinel';
 import InstancedTunnel from './InstancedTunnel';
 import NeuralPulseField from './NeuralPulseField';
 import { useScrollProgress } from '../../hooks/useScrollProgress';
@@ -253,7 +252,6 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       <spotLight position={[4, -6, -12]} angle={0.5} penumbra={1} intensity={0.8} color="#6366f1" />
 
       <CinematicCamera />
-      <HeroSentinel />
       <SpeakerPhotoGallery3D lowPower={lowPower} />
       <NexusCore />
       <NeuralPulseField lowPower={lowPower} />
