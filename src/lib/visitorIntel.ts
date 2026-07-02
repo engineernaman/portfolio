@@ -49,6 +49,13 @@ export interface VisitorPulseResponse {
   browser?: string;
 }
 
+interface PublicGeo {
+  ip: string;
+  location: string;
+  isp: string;
+  vpnAssessment: string;
+}
+
 const SESSION_KEY = 'soumysec-session-id';
 const SCAN_KEY = 'soumysec-scan-done';
 
@@ -122,6 +129,63 @@ function buildHardwareSummary(parts: {
   const bits = parts.bitness !== 'unknown' ? `${parts.bitness}-bit` : '';
   const archBits = [arch, bits].filter(Boolean).join(' ');
   return [coreLabel, memLabel, archBits, `GPU: ${parts.gpu}`].filter(Boolean).join(' · ');
+}
+
+function assessVpnFromSecurity(security?: { proxy?: boolean; vpn?: boolean; tor?: boolean; relay?: boolean }, type?: string): string {
+  if (!security) return 'No obvious VPN signals';
+  if (security.vpn) return 'Likely VPN (provider flag)';
+  if (security.proxy) return 'Likely proxy / anonymizer';
+  if (security.tor) return 'Tor network suspected';
+  if (security.relay) return 'Relay / privacy network';
+  if (type === 'hosting') return 'Datacenter / hosting IP';
+  return 'No obvious VPN signals';
+}
+
+function parseIpwho(data: Record<string, unknown>): PublicGeo | null {
+  if (!data.success) return null;
+  const connection = data.connection as { isp?: string; org?: string } | undefined;
+  const security = data.security as { proxy?: boolean; vpn?: boolean; tor?: boolean; relay?: boolean } | undefined;
+  const location = [data.city, data.region, data.country].filter(Boolean).join(', ');
+  return {
+    ip: String(data.ip || 'Unknown'),
+    location: location || 'Unknown',
+    isp: connection?.isp || connection?.org || 'Unknown ISP',
+    vpnAssessment: assessVpnFromSecurity(security, String(data.type || '')),
+  };
+}
+
+/** Client-side geo when server API is unavailable (vite-only dev, CSP, etc.) */
+export async function fetchPublicGeo(): Promise<PublicGeo | null> {
+  const providers = [
+    async () => {
+      const res = await fetch('https://ipwho.is/', { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) return null;
+      return parseIpwho(await res.json());
+    },
+    async () => {
+      const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.error) return null;
+      const location = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+      return {
+        ip: String(data.ip || 'Unknown'),
+        location: location || 'Unknown',
+        isp: data.org || data.asn || 'Unknown ISP',
+        vpnAssessment: data.threat?.is_proxy || data.threat?.is_tor ? 'Possible VPN/Proxy (threat intel)' : 'No obvious VPN signals',
+      };
+    },
+  ];
+
+  for (const provider of providers) {
+    try {
+      const result = await provider();
+      if (result?.ip) return result;
+    } catch {
+      /* try next provider */
+    }
+  }
+  return null;
 }
 
 export async function collectClientIntel(): Promise<ClientIntel> {
@@ -222,12 +286,12 @@ export async function collectClientIntel(): Promise<ClientIntel> {
   };
 }
 
-function buildClientFallback(client: ClientIntel): VisitorPulseResponse {
+function buildClientFallback(client: ClientIntel, geo?: PublicGeo | null): VisitorPulseResponse {
   return {
-    ip: 'Resolving...',
-    location: 'Pending geo lookup',
-    isp: 'Pending',
-    vpnAssessment: 'Scan in progress',
+    ip: geo?.ip || 'Resolving...',
+    location: geo?.location || 'Resolving location...',
+    isp: geo?.isp || 'Resolving...',
+    vpnAssessment: geo?.vpnAssessment || 'Assessing route...',
     battery: formatBattery(client.batteryLevel, client.batteryCharging),
     connection: client.connectionType,
     timezone: client.timezone,
@@ -247,43 +311,70 @@ function buildClientFallback(client: ClientIntel): VisitorPulseResponse {
   };
 }
 
+async function postToServer(
+  client: ClientIntel,
+  event: 'connection' | 'contact_form',
+  extra?: { name?: string; email?: string }
+): Promise<VisitorPulseResponse | null> {
+  const res = await fetch('/api/visitor-pulse', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, client: { ...client, ...extra } }),
+    signal: AbortSignal.timeout(12000),
+  });
+  if (!res.ok) return null;
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) return null;
+  const data = await res.json();
+  if (!data || typeof data !== 'object' || !data.ip) return null;
+  return data as VisitorPulseResponse;
+}
+
 export async function sendVisitorPulse(
   event: 'connection' | 'contact_form',
   extra?: { name?: string; email?: string }
 ): Promise<VisitorPulseResponse> {
   const client = await collectClientIntel();
-  const fallback = buildClientFallback(client);
 
-  try {
-    const res = await fetch('/api/visitor-pulse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event,
-        client: { ...client, ...extra },
-      }),
-    });
-    if (!res.ok) {
-      return { ...fallback, vpnAssessment: 'Server offline — client signals only' };
-    }
-    const data = await res.json();
+  const [serverData, publicGeo] = await Promise.all([
+    postToServer(client, event, extra).catch(() => null),
+    fetchPublicGeo().catch(() => null),
+  ]);
+
+  const geo = serverData ?? publicGeo;
+  const base = buildClientFallback(client, geo);
+
+  if (serverData) {
     return {
-      ...fallback,
-      ...data,
+      ...base,
+      ...serverData,
+      localTime: client.localTime,
+      browser: parseBrowser(client.userAgent),
+      os: serverData.os || client.os,
+      architecture: serverData.architecture || client.architecture,
+      gpu: serverData.gpu || client.gpu,
+      hardware: serverData.hardware || client.hardwareSummary,
+    };
+  }
+
+  if (publicGeo) {
+    return {
+      ...base,
+      ...publicGeo,
       localTime: client.localTime,
       browser: parseBrowser(client.userAgent),
     };
-  } catch {
-    return {
-      ...fallback,
-      ip: 'Client-side only',
-      location: `${client.timezone} (timezone inferred)`,
-      isp: 'Unavailable offline',
-      vpnAssessment: 'Cannot assess without server',
-    };
   }
+
+  return {
+    ...base,
+    ip: 'Geo lookup unavailable',
+    location: `${client.timezone} (timezone only)`,
+    isp: 'Unavailable',
+    vpnAssessment: 'Cannot assess — check network / ad-blocker',
+  };
 }
 
 export function isVpnRisk(assessment: string): boolean {
-  return /likely|possible|proxy|vpn|datacenter|anonymizer/i.test(assessment);
+  return /likely|possible|proxy|vpn|datacenter|anonymizer|tor|relay/i.test(assessment);
 }

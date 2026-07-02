@@ -133,7 +133,7 @@ function AppContent() {
           <DomainMarquee />
 
           <div className="relative pointer-events-auto">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/6 to-void/40 pointer-events-none" aria-hidden />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/4 to-void/30 pointer-events-none" aria-hidden />
             <div className="relative">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>

@@ -36,23 +36,26 @@ function getClientIp(req) {
 }
 
 async function enrichIp(ip) {
-  if (ip === 'unknown' || ip.startsWith('127.') || ip === '::1' || ip.startsWith('::ffff:127.')) {
-    return {
-      city: 'Local',
-      regionName: '',
-      country: 'Development',
-      isp: 'Localhost',
-      org: 'Local',
-      proxy: false,
-      hosting: false,
-    };
-  }
+  const isLocal =
+    ip === 'unknown' || ip.startsWith('127.') || ip === '::1' || ip.startsWith('::ffff:127.');
+  const url = isLocal ? 'https://ipwho.is/' : `https://ipwho.is/${encodeURIComponent(ip)}`;
+
   try {
-    const res = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,regionName,city,isp,org,proxy,hosting,mobile`
-    );
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     const data = await res.json();
-    if (data.status === 'success') return data;
+    if (data.success) {
+      return {
+        city: data.city,
+        regionName: data.region,
+        country: data.country,
+        isp: data.connection?.isp || data.connection?.org,
+        org: data.connection?.org,
+        proxy: Boolean(data.security?.proxy || data.security?.vpn),
+        hosting: data.type === 'hosting',
+        mobile: data.type === 'mobile',
+        tor: Boolean(data.security?.tor),
+      };
+    }
   } catch {
     /* geo lookup failed */
   }
@@ -61,7 +64,8 @@ async function enrichIp(ip) {
 
 function assessVpn(geo) {
   if (!geo) return 'Unknown — geo lookup unavailable';
-  if (geo.proxy) return 'Likely VPN/Proxy (proxy flag)';
+  if (geo.tor) return 'Tor network suspected';
+  if (geo.proxy) return 'Likely VPN/Proxy detected';
   if (geo.hosting) return 'Likely VPN/Datacenter (hosting IP)';
   const isp = `${geo.isp || ''} ${geo.org || ''}`.toLowerCase();
   if (/vpn|proxy|tor|datacenter|hosting|cloud|digitalocean|amazon|google|azure|mullvad|nordvpn/i.test(isp)) {

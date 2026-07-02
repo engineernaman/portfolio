@@ -52,11 +52,19 @@ const VisitorPulse = () => {
   const { setVisitorProfile, visitorProfile } = useApp();
   const [data, setData] = useState<VisitorPulseResponse | null>(visitorProfile);
   const [phase, setPhase] = useState<'idle' | 'scanning' | 'done'>(
-    visitorProfile ? 'done' : 'idle'
+    visitorProfile && visitorProfile.ip && !/resolving|unavailable/i.test(visitorProfile.ip) ? 'done' : 'idle'
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [visibleFields, setVisibleFields] = useState(0);
-  const scannedRef = useRef(hasScannedThisSession());
+  const scannedRef = useRef(hasScannedThisSession() || Boolean(visitorProfile));
+
+  useEffect(() => {
+    if (visitorProfile && !data) {
+      setData(visitorProfile);
+      setPhase('done');
+      setVisibleFields(buildFields(visitorProfile).length);
+    }
+  }, [visitorProfile, data]);
 
   const runScan = useCallback(async () => {
     setPhase('scanning');
