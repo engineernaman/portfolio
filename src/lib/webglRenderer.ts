@@ -7,18 +7,25 @@ export interface RendererOptions {
   prefersWebGL1?: boolean;
 }
 
+const CONTEXT_ATTRS = {
+  alpha: true,
+  antialias: false,
+  failIfMajorPerformanceCaveat: false,
+  powerPreference: 'default' as WebGLPowerPreference,
+};
+
 /**
- * Three.js r184+ only requests WebGL2 internally. When the browser blocks it
- * (AllowWebgl2:false), skip WebGL2 entirely and pass a WebGL1 context in.
+ * Create a WebGL renderer with WebGL2-first, WebGL1 fallback (three@0.162).
+ * Passing a pre-created context avoids r184+ WebGL2-only internal probing.
  */
 export function createWebGLRenderer(
   canvas: HTMLCanvasElement | OffscreenCanvas,
   options: RendererOptions = {}
 ): THREE.WebGLRenderer {
   const attrs: WebGLContextAttributes = {
+    ...CONTEXT_ATTRS,
     alpha: options.alpha ?? true,
     antialias: options.antialias ?? false,
-    failIfMajorPerformanceCaveat: false,
     powerPreference: options.powerPreference ?? 'default',
   };
 
@@ -38,11 +45,17 @@ export function createWebGLRenderer(
     throw new Error('WebGL unavailable');
   }
 
-  return new THREE.WebGLRenderer({
+  const renderer = new THREE.WebGLRenderer({
     canvas,
     context,
     alpha: attrs.alpha,
     antialias: attrs.antialias,
     powerPreference: attrs.powerPreference,
   });
+
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  return renderer;
 }

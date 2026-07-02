@@ -1,4 +1,4 @@
-import { Component, Suspense, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { Component, Suspense, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
 import CyberCommandWorld from './CyberCommandWorld';
 import { detectWebGL } from '../../lib/webglDetect';
@@ -14,7 +14,8 @@ class CanvasErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  componentDidCatch() {
+  componentDidCatch(err: Error) {
+    console.error('[ImmersiveCanvas]', err.message);
     this.props.onFail();
   }
 
@@ -30,29 +31,21 @@ interface ImmersiveCanvasProps {
 }
 
 const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanvasProps) => {
-  const [webgl] = useState(() => detectWebGL());
+  const webgl = useMemo(() => detectWebGL(), []);
   const [isMobile, setIsMobile] = useState(false);
-  const [eventSource, setEventSource] = useState<HTMLElement | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     setIsMobile(/iPhone|iPad|Android/i.test(navigator.userAgent));
-    setEventSource(document.body);
   }, []);
 
-  const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  const lowPower =
-    reducedMotion ||
-    webgl.prefersWebGL1 ||
-    isMobile ||
-    (deviceMemory !== undefined && deviceMemory < 4);
+  const lowPower = reducedMotion || isMobile;
 
   const createRenderer = useCallback(
     (canvas: HTMLCanvasElement) =>
       createWebGLRenderer(canvas, {
         antialias: !lowPower,
         alpha: true,
-        powerPreference: 'default',
         prefersWebGL1: webgl.prefersWebGL1,
       }),
     [lowPower, webgl.prefersWebGL1]
@@ -66,20 +59,16 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
   if (webgl.capability === 'none' || failed) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[1] pointer-events-none motion-3d-layer"
-      id="immersive-canvas"
-      aria-hidden
-    >
+    <div className="fixed inset-0 z-[5] pointer-events-none" id="immersive-canvas" aria-hidden>
       <CanvasErrorBoundary onFail={handleFail}>
         <Canvas
           gl={createRenderer}
           shadows={!lowPower}
-          dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 1.75)}
-          camera={{ position: [0, 2, 8], fov: 58 }}
+          dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
+          camera={{ position: [2.5, 1.5, 9], fov: 55 }}
           performance={{ min: 0.5 }}
-          style={{ background: 'transparent', pointerEvents: 'none' }}
-          eventSource={eventSource ?? undefined}
+          style={{ background: 'transparent', pointerEvents: 'auto' }}
+          eventSource={document.body}
           eventPrefix="client"
         >
           <Suspense fallback={null}>

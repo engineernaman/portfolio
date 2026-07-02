@@ -168,8 +168,8 @@ const MotionBackdrop = ({ reducedMotion = false }: MotionBackdropProps) => {
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#010208] from-0% via-[#010208]/95 via-[42%] to-transparent to-[78%]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#010208]/80" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#010208] from-0% via-[#010208]/88 via-[38%] to-transparent to-[65%]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#010208]/60" />
     </div>
   );
 };
