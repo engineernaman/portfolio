@@ -8,6 +8,10 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-padding-top: 5.5rem;
+    color-scheme: dark;
+    --stripe-color: rgba(52, 211, 153, 0.12);
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
   }
 
   body {
@@ -28,7 +32,15 @@
   }
 }
 
-/* CSS Variables for Dynamic Theming */
+@keyframes aurora-bg {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+.animate-aurora-bg {
+  animation: aurora-bg 60s linear infinite;
+}
+
 :root {
   --theme-primary: #00ff41;
   --theme-secondary: #00ffff;

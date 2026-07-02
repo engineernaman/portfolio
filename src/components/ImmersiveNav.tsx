@@ -20,6 +20,7 @@ import {
 import { profile, sections } from '../data/portfolio';
 import { TOOL_PAGES, pageToHash, type SitePage } from '../data/siteNav';
 import { useApp } from '../context/AppContext';
+import AnimatedButton from '@/components/ui/animated-button';
 import NavUtilities from './NavUtilities';
 import SectionRail from './SectionRail';
 
@@ -131,20 +132,17 @@ const ImmersiveNav = ({ activePage }: ImmersiveNavProps) => {
             <span className="font-display text-sm font-bold text-readable hidden sm:block">{profile.brand}</span>
           </a>
 
-          <button
+          <AnimatedButton
             type="button"
             onClick={() => {
               playTypingSound();
               setPortalOpen(true);
             }}
-            className="pointer-events-auto group relative overflow-hidden px-5 py-2.5 rounded-full border border-emerald-500/30 bg-[rgba(6,10,16,0.8)] backdrop-blur-xl"
+            className="pointer-events-auto !rounded-full !px-5 !py-2.5 !bg-[rgba(6,10,16,0.85)] !border-emerald-500/30 !text-emerald-300 text-xs uppercase tracking-[0.2em] font-mono"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/15 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <span className="relative flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-emerald-300">
-              <Sparkles className="w-3.5 h-3.5" />
-              Explore
-            </span>
-          </button>
+            <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+            Explore
+          </AnimatedButton>
 
           <div className="pointer-events-auto flex items-center gap-1.5 px-2 py-1.5 rounded-full border border-white/8 bg-[rgba(6,10,16,0.8)] backdrop-blur-xl">
             <NavUtilities />

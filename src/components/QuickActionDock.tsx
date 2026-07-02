@@ -11,6 +11,7 @@ import {
   X,
   Grip,
 } from 'lucide-react';
+import AnimatedButton from '@/components/ui/animated-button';
 import { useMusic } from '../context/MusicContext';
 import { useApp } from '../context/AppContext';
 import { useSitePage } from '../hooks/useSitePage';
@@ -157,15 +158,15 @@ const QuickActionDock = () => {
       </AnimatePresence>
 
       {/* Trigger */}
-      <button
+      <AnimatedButton
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-center w-12 h-12 rounded-2xl border border-emerald-500/35 bg-[rgba(6,10,16,0.9)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.45)] hover:border-cyan-500/40 hover:shadow-[0_0_24px_rgba(52,211,153,0.2)] transition-all"
+        className="!w-12 !h-12 !p-0 !rounded-2xl !bg-[rgba(6,10,16,0.9)] !border-emerald-500/35 shadow-[0_8px_32px_rgba(0,0,0,0.45)]"
         aria-label="Quick actions"
         aria-expanded={open}
       >
         <Grip className="w-5 h-5 text-emerald-400" />
-      </button>
+      </AnimatedButton>
     </div>
   );
 };

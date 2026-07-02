@@ -1,4 +1,5 @@
 import { Shield, Linkedin, Github, Mail } from 'lucide-react';
+import { SkiperLink } from '@/components/skiper/SkiperPrimitives';
 import { profile, social, sections } from '../data/portfolio';
 
 const Footer = () => {
@@ -18,15 +19,12 @@ const Footer = () => {
 
           <div>
             <h4 className="label-cyber mb-4">Navigate</h4>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {sections.map((s) => (
                 <li key={s.id}>
-                  <a
-                    href={`#${s.id}`}
-                    className="text-sm text-readable-muted hover:text-emerald-400 transition-colors font-body"
-                  >
+                  <SkiperLink href={`#${s.id}`} className="text-sm">
                     {s.label}
-                  </a>
+                  </SkiperLink>
                 </li>
               ))}
             </ul>
@@ -34,27 +32,28 @@ const Footer = () => {
 
           <div>
             <h4 className="label-cyber mb-4">Connect</h4>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
+              <SkiperLink href={social.linkedin} variant="center" className="text-sm" target="_blank" rel="noopener noreferrer">
+                LinkedIn
+              </SkiperLink>
+              <SkiperLink href={social.github} variant="height" className="text-sm" target="_blank" rel="noopener noreferrer">
+                GitHub
+              </SkiperLink>
               <a
-                href={social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-readable-dim hover:text-cyan-400 transition-colors"
-                aria-label="LinkedIn"
+                href={social.email}
+                className="inline-flex items-center gap-1.5 text-sm text-readable-dim hover:text-emerald-400 transition-colors"
+                aria-label="Email"
               >
+                <Mail className="w-4 h-4" />
+                Email
+              </a>
+            </div>
+            <div className="flex gap-4 mt-4 md:hidden">
+              <a href={social.linkedin} target="_blank" rel="noopener noreferrer" className="text-readable-dim hover:text-cyan-400" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a
-                href={social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-readable-dim hover:text-cyan-400 transition-colors"
-                aria-label="GitHub"
-              >
+              <a href={social.github} target="_blank" rel="noopener noreferrer" className="text-readable-dim hover:text-cyan-400" aria-label="GitHub">
                 <Github className="w-5 h-5" />
-              </a>
-              <a href={social.email} className="text-readable-dim hover:text-emerald-400 transition-colors" aria-label="Email">
-                <Mail className="w-5 h-5" />
               </a>
             </div>
           </div>
