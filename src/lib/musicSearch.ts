@@ -34,6 +34,8 @@ export async function searchYouTube(query: string): Promise<MusicResult[]> {
   const instances = [
     'https://pipedapi.kavin.rocks',
     'https://pipedapi.adminforge.de',
+    'https://api.piped.yt',
+    'https://pipedapi.in.projectsegfau.lt',
   ];
 
   for (const base of instances) {

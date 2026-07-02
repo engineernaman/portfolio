@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import Navbar from './components/Navbar';
+import CommandNav from './components/CommandNav';
 import About from './components/About';
 import Experience from './components/Experience';
 import Ventures from './components/Ventures';
@@ -83,7 +83,7 @@ function AppContent() {
 
       <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="pointer-events-auto">
-          <Navbar activePage={page} />
+          <CommandNav activePage={page} />
         </div>
       </div>
 
