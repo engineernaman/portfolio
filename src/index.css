@@ -303,14 +303,24 @@ textarea:focus {
   padding: 0 1.5rem;
 }
 
+.section-readable {
+  position: relative;
+  isolation: isolate;
+}
+
+.section-readable .container {
+  position: relative;
+  z-index: 1;
+}
+
 ::selection {
   background: var(--theme-primary);
   color: #000;
 }
 
 .cyber-panel {
-  background: rgba(10, 14, 22, 0.62);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  background: rgba(6, 10, 16, 0.94);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 /* Readable body copy inside panels — sans-serif, high contrast */
@@ -318,11 +328,11 @@ textarea:focus {
   font-family: Inter, system-ui, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.75;
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .prose-cyber p {
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .prose-cyber strong,

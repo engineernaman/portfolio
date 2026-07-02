@@ -92,15 +92,15 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
             </div>
 
             <p className="text-[10px] tracking-[0.28em] text-emerald-400/60 font-mono uppercase flex items-center gap-2">
-              scroll <ChevronDown className="w-3 h-3 animate-bounce" /> · explore the live command core →
+              scroll <ChevronDown className="w-3 h-3 animate-bounce" /> · hover the network stack to disassemble →
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Right — 3D stage + live HUD */}
+        {/* Right — interactive network stack */}
         <motion.div
           style={{ y: stageY, opacity: stageOpacity }}
-          className="relative z-20 flex-1 px-6 sm:px-10 lg:px-6 lg:pr-12 xl:pr-14 pt-4 lg:pt-32 pb-12 lg:pb-16 min-h-[480px]"
+          className="relative z-20 flex-1 px-6 sm:px-10 lg:px-6 lg:pr-12 xl:pr-14 pt-4 lg:pt-32 pb-12 lg:pb-16 min-h-[480px] bg-[#010208]"
         >
           <HeroRightStage reducedMotion={reducedMotion} />
         </motion.div>

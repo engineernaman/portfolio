@@ -18,7 +18,6 @@ import AnimatedSection from './components/AnimatedSection';
 import HeroExperience from './components/HeroExperience';
 import DomainMarquee from './components/DomainMarquee';
 import MotionBackdrop from './components/MotionBackdrop';
-import ImmersiveHud from './components/ImmersiveHud';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
 import LoadingScreen from './components/LoadingScreen';
@@ -33,6 +32,7 @@ import QuickActionDock from './components/QuickActionDock';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { useSitePage } from './hooks/useSitePage';
+import { sendVisitorPulse, hasScannedThisSession, markScannedThisSession } from './lib/visitorIntel';
 import { detectWebGL } from './lib/webglDetect';
 
 import { motion, useScroll, useSpring } from 'framer-motion';
@@ -49,7 +49,7 @@ function AppContent() {
   });
   const { page } = useSitePage();
   const isHome = page === 'home';
-  const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab } = useApp();
+  const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab, setVisitorProfile, visitorProfile } = useApp();
   const webgl = useMemo(() => detectWebGL(), []);
 
   useSmoothScroll(isHome, reducedMotion);
@@ -73,6 +73,16 @@ function AppContent() {
   useEffect(() => {
     registerTriggerMatrix(() => setShowMatrix(true));
   }, [registerTriggerMatrix]);
+
+  useEffect(() => {
+    if (!isHome) return;
+    if (visitorProfile?.ip && !/resolving|unavailable/i.test(visitorProfile.ip)) return;
+    if (hasScannedThisSession()) return;
+    sendVisitorPulse('connection').then((result) => {
+      setVisitorProfile(result);
+      markScannedThisSession();
+    });
+  }, [isHome, visitorProfile?.ip, setVisitorProfile]);
 
   return (
     <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
@@ -113,7 +123,6 @@ function AppContent() {
         </div>
       </div>
 
-      {isHome && <ImmersiveHud />}
 
       {page === 'music' && (
         <div className="relative z-10">
@@ -132,8 +141,8 @@ function AppContent() {
           <HeroExperience reducedMotion={reducedMotion} />
           <DomainMarquee />
 
-          <div className="relative pointer-events-auto">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/4 to-void/30 pointer-events-none" aria-hidden />
+          <div className="relative pointer-events-auto bg-[rgba(6,10,16,0.94)] backdrop-blur-xl border-t border-white/[0.07] shadow-[0_-32px_80px_rgba(0,0,0,0.65)]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(1,2,8,0.88)] via-[rgba(6,10,16,0.96)] to-[rgba(6,10,16,0.98)] pointer-events-none" aria-hidden />
             <div className="relative">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>

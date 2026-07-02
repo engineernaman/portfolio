@@ -31,9 +31,21 @@ interface ImmersiveCanvasProps {
 const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanvasProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [opacity, setOpacity] = useState(1);
 
   useEffect(() => {
     setIsMobile(/iPhone|iPad|Android/i.test(navigator.userAgent));
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const hero = window.innerHeight;
+      const t = Math.min(window.scrollY / hero, 1);
+      setOpacity(1 - t * 0.55);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const lowPower = reducedMotion || isMobile;
@@ -41,7 +53,12 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
   if (failed) return null;
 
   return (
-    <div className="fixed inset-0 z-0" id="immersive-canvas" aria-hidden>
+    <div
+      className="fixed inset-0 z-0 transition-opacity duration-300"
+      id="immersive-canvas"
+      style={{ opacity }}
+      aria-hidden
+    >
       <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}

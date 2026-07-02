@@ -24,7 +24,7 @@ const About = () => {
   }));
 
   return (
-    <section id="about" className="py-20 md:py-28 relative">
+    <section id="about" className="py-20 md:py-28 relative section-readable">
       <div className="container mx-auto px-6 max-w-6xl">
         <SectionHeader number="01" title="Executive Profile" subtitle={profile.mission} />
 
