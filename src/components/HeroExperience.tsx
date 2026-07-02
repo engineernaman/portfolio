@@ -38,6 +38,14 @@ const HeroExperience = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0">
+      <div className="hidden lg:block absolute right-[8%] top-1/2 -translate-y-1/2 z-10 pointer-events-none" aria-hidden>
+        <div className="motion-hero-ring w-[min(36vw,320px)] h-[min(36vw,320px)] rounded-full border border-emerald-500/20" />
+        <div className="motion-hero-ring-inner absolute inset-8 rounded-full border border-cyan-400/15" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-emerald-400/80 shadow-[0_0_24px_rgba(52,211,153,0.6)]" />
+        </div>
+      </div>
+
       <div className="relative z-20 w-full max-w-xl px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
         <div
           className="rounded-2xl border border-emerald-500/20 bg-[rgba(10,14,22,0.96)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.5)]"

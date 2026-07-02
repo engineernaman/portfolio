@@ -336,3 +336,100 @@ textarea:focus {
   text-transform: uppercase;
   color: #94a3b8;
 }
+
+/* MotionSites-style instant backdrop — CSS only, no WebGL */
+.motion-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.45;
+  will-change: transform;
+}
+
+.motion-orb-emerald {
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.55) 0%, transparent 70%);
+}
+
+.motion-orb-cyan {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.45) 0%, transparent 70%);
+}
+
+.motion-orb-indigo {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%);
+}
+
+@keyframes motion-orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-16px, 12px) scale(1.06); }
+}
+
+@keyframes motion-orb-float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -14px) scale(1.04); }
+}
+
+.motion-orb-animate {
+  animation: motion-orb-float 16s ease-in-out infinite;
+}
+
+.motion-orb-animate-slow {
+  animation: motion-orb-float-slow 22s ease-in-out infinite;
+}
+
+.motion-grid-perspective {
+  background-image:
+    linear-gradient(rgba(52, 211, 153, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 211, 153, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to right, transparent 35%, black 55%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-orb-animate,
+  .motion-orb-animate-slow {
+    animation: none;
+  }
+}
+
+.motion-hero-ring {
+  position: relative;
+  animation: motion-hero-spin 48s linear infinite;
+}
+
+.motion-hero-ring-inner {
+  animation: motion-hero-spin-reverse 32s linear infinite;
+}
+
+@keyframes motion-hero-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes motion-hero-spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-hero-ring,
+  .motion-hero-ring-inner {
+    animation: none;
+  }
+}
+
+.motion-3d-layer {
+  animation: motion-3d-fade-in 1.2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes motion-3d-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-3d-layer {
+    animation: none;
+    opacity: 1;
+  }
+}
