@@ -308,8 +308,8 @@ textarea:focus {
 }
 
 .cyber-panel {
-  background: rgba(10, 14, 22, 0.92);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  background: rgba(10, 14, 22, 0.62);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
 /* Readable body copy inside panels — sans-serif, high contrast */
@@ -414,6 +414,16 @@ textarea:focus {
   .motion-hero-ring,
   .motion-hero-ring-inner {
     animation: none;
+  }
+}
+
+.hero-glow-name {
+  filter: drop-shadow(0 0 24px rgba(52, 211, 153, 0.25));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow-name {
+    filter: none;
   }
 }
 

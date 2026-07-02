@@ -21,11 +21,14 @@ import MotionBackdrop from './components/MotionBackdrop';
 import ImmersiveHud from './components/ImmersiveHud';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
+import LoadingScreen from './components/LoadingScreen';
 import ImmersiveCanvas from './components/three/ImmersiveCanvas';
 import MusicPage from './pages/MusicPage';
 import CyberChefPage from './pages/CyberChefPage';
 
 import { AppProvider, useApp } from './context/AppContext';
+import { MusicProvider } from './context/MusicContext';
+import GlobalMusicPlayer from './components/GlobalMusicPlayer';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { useSitePage } from './hooks/useSitePage';
@@ -36,6 +39,13 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 function AppContent() {
   const [showMatrix, setShowMatrix] = useState(false);
   const [show3d, setShow3d] = useState(true);
+  const [booted, setBooted] = useState(() => {
+    try {
+      return sessionStorage.getItem('soumysec-booted') === '1';
+    } catch {
+      return false;
+    }
+  });
   const { page } = useSitePage();
   const isHome = page === 'home';
   const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab } = useApp();
@@ -65,12 +75,27 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
-      {isHome && show3d ? (
+      {!booted && (
+        <LoadingScreen
+          onComplete={() => {
+            setBooted(true);
+            try {
+              sessionStorage.setItem('soumysec-booted', '1');
+            } catch {
+              /* ignore */
+            }
+          }}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {isHome && show3d && (
         <ImmersiveCanvas
           reducedMotion={reducedMotion}
           onUnavailable={() => setShow3d(false)}
         />
-      ) : (
+      )}
+      {!isHome && (
         <MotionBackdrop reducedMotion={reducedMotion} />
       )}
 
@@ -102,12 +127,12 @@ function AppContent() {
       )}
 
       {isHome && (
-        <div className="relative z-10 pointer-events-none">
+        <div className="relative z-10">
           <HeroExperience reducedMotion={reducedMotion} />
           <DomainMarquee />
 
           <div className="relative pointer-events-auto">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/8 to-void/45 pointer-events-none" aria-hidden />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/6 to-void/40 pointer-events-none" aria-hidden />
             <div className="relative">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>
@@ -124,6 +149,7 @@ function AppContent() {
         </div>
       )}
 
+      <GlobalMusicPlayer />
       <IntelLab open={intelLabOpen} onClose={closeIntelLab} />
       <VisitorSessionBadge />
       <NotificationSystem />
@@ -140,7 +166,9 @@ function App() {
 
   return (
     <AppProvider reducedMotion={reducedMotion}>
-      <AppContent />
+      <MusicProvider>
+        <AppContent />
+      </MusicProvider>
     </AppProvider>
   );
 }

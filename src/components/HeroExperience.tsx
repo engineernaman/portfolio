@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { FlaskConical, Radar } from 'lucide-react';
-import { animate, stagger } from 'animejs';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { FlaskConical, Radar, Sparkles, ChevronDown } from 'lucide-react';
 import MagneticButton from './ui/MagneticButton';
+import HeroSceneCanvas from './three/HeroSceneCanvas';
 import { useApp } from '../context/AppContext';
 import { profile, heroStats, governmentClientsSummary } from '../data/portfolio';
 
@@ -9,69 +10,50 @@ interface HeroExperienceProps {
   reducedMotion?: boolean;
 }
 
-const HeroExperience = ({ reducedMotion: _reducedMotion = false }: HeroExperienceProps) => {
-  const played = useRef(false);
+const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
+  const sectionRef = useRef<HTMLElement>(null);
   const { openIntelLab } = useApp();
-
-  useEffect(() => {
-    if (played.current) return;
-    played.current = true;
-
-    animate('.hero-line', {
-      opacity: [0, 1],
-      translateY: [12, 0],
-      delay: stagger(45),
-      duration: 600,
-      ease: 'outCubic',
-    });
-
-    animate('.hero-role', {
-      opacity: [0, 1],
-      delay: stagger(40, { start: 350 }),
-      duration: 500,
-      ease: 'outCubic',
-    });
-
-    animate('.hero-stat', {
-      opacity: [0, 1],
-      delay: stagger(60, { start: 650 }),
-      duration: 450,
-      ease: 'outCubic',
-    });
-  }, []);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
+  const textY = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : 50]);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0 lg:justify-start">
-      <div className="relative z-30 w-full max-w-lg px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
-        <div className="rounded-2xl border border-emerald-500/20 bg-[rgba(6,10,16,0.38)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_48px_rgba(0,0,0,0.25)]">
-          <p className="hero-line font-mono text-[11px] tracking-[0.2em] text-emerald-400 uppercase mb-5 opacity-0 font-medium">
-            {profile.brand} · security & technology
+    <section
+      ref={sectionRef}
+      id="home"
+      className="relative min-h-screen flex flex-col lg:flex-row items-center gap-8 pt-20 pb-12 lg:pt-24 lg:pb-16 px-6 sm:px-10 lg:px-14"
+    >
+      {/* Left — details card */}
+      <motion.div style={{ y: textY }} className="relative z-20 w-full lg:w-[46%] shrink-0 pointer-events-none">
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-2xl border border-emerald-500/30 bg-[rgba(6,10,16,0.88)] backdrop-blur-xl p-6 sm:p-8 shadow-[0_16px_64px_rgba(0,0,0,0.55)] pointer-events-auto"
+        >
+          <p className="font-mono text-[11px] tracking-[0.22em] text-emerald-400 uppercase mb-5 font-medium flex items-center gap-2">
+            <Sparkles className="w-3 h-3" />
+            {profile.brand} · next-gen tech leadership
           </p>
 
-          <h1 className="font-display text-[clamp(2rem,6.5vw,3.5rem)] font-bold leading-[1.1] tracking-tight mb-4">
-            <span className="hero-line block opacity-0 text-readable">Soumy Naman</span>
-            <span className="hero-line block opacity-0 text-emerald-400 mt-1">Srivastava</span>
+          <h1 className="font-display text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.08] tracking-tight mb-4">
+            <span className="block text-readable">Soumy Naman</span>
+            <span className="block bg-gradient-to-r from-emerald-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent mt-1">
+              Srivastava
+            </span>
           </h1>
 
-          <p className="hero-role opacity-0 text-base text-readable-muted font-body leading-relaxed mb-1">
-            {profile.roles[0]}
-          </p>
-          <p className="hero-role opacity-0 text-sm text-readable-dim font-body mb-6">
-            {profile.roles.slice(1).join(' · ')}
-          </p>
-
-          <p className="hero-line font-body text-base text-readable-muted leading-relaxed mb-4 opacity-0">
-            {profile.tagline}
-          </p>
+          <p className="text-lg text-readable font-body leading-snug mb-1">Cybersecurity &amp; Technology Leader</p>
+          <p className="text-sm text-readable-dim font-body mb-6">{profile.roles.slice(1).join(' · ')}</p>
+          <p className="font-body text-base text-readable-muted leading-relaxed mb-4">{profile.tagline}</p>
 
           <p
-            className="hero-line text-sm text-readable-muted leading-relaxed mb-6 opacity-0 font-body border border-white/10 rounded-lg p-3.5 bg-black/30 line-clamp-3"
+            className="text-sm text-readable-muted leading-relaxed mb-6 font-body border border-white/10 rounded-lg p-3.5 bg-black/35 line-clamp-3"
             title={governmentClientsSummary}
           >
             <span className="text-emerald-400 font-medium">Gov clients:</span> {governmentClientsSummary}
           </p>
 
-          <div className="flex flex-wrap gap-3 mb-6 pointer-events-auto">
+          <div className="flex flex-wrap gap-3 mb-6">
             <MagneticButton href="#experience">View experience</MagneticButton>
             <MagneticButton href="#speaking" variant="ghost">Speaking</MagneticButton>
             <button
@@ -92,24 +74,35 @@ const HeroExperience = ({ reducedMotion: _reducedMotion = false }: HeroExperienc
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-4">
-            {heroStats.map((s) => (
-              <div
+            {heroStats.map((s, i) => (
+              <motion.div
                 key={s.label}
-                className="hero-stat opacity-0 rounded-lg border border-white/10 bg-black/25 p-3 sm:p-4 text-center"
+                initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.07 }}
+                className="rounded-lg border border-white/10 bg-black/30 p-3 sm:p-4 text-center"
               >
                 <div className="font-display text-xl sm:text-2xl font-bold text-readable">{s.value}</div>
-                <div className="text-[10px] text-readable-dim font-body font-medium mt-1.5 leading-tight">
-                  {s.label}
-                </div>
-              </div>
+                <div className="text-[10px] text-readable-dim font-body font-medium mt-1.5">{s.label}</div>
+              </motion.div>
             ))}
           </div>
 
-          <p className="text-[10px] tracking-[0.25em] text-emerald-400/50 font-mono uppercase">
-            scroll ↓ · enter the ecosystem
+          <p className="text-[10px] tracking-[0.28em] text-emerald-400/60 font-mono uppercase flex items-center gap-2">
+            scroll <ChevronDown className="w-3 h-3 animate-bounce" /> · drag 3D nodes below
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Right — guaranteed visible live 3D canvas */}
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-20 w-full lg:w-[54%] flex-1 pointer-events-auto min-h-[320px]"
+      >
+        <HeroSceneCanvas reducedMotion={reducedMotion} />
+      </motion.div>
     </section>
   );
 };

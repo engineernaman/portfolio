@@ -6,7 +6,12 @@ import InteractiveNode from './InteractiveNode';
 import PostFX from './PostFX';
 import SectionVignettes from './SectionVignettes';
 import SpeakerPhotoGallery3D from './SpeakerPhotoGallery3D';
+import NexusCore from './NexusCore';
+import HeroSentinel from './HeroSentinel';
+import InstancedTunnel from './InstancedTunnel';
+import NeuralPulseField from './NeuralPulseField';
 import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getScrollVelocity } from '../../lib/scrollState';
 
 export const WORLD_SECTORS = [
   { sectionId: 'about', label: 'PROFILE', color: '#34d399', shape: 'octahedron' as const, position: [5.5, 0.4, -4] as [number, number, number] },
@@ -37,36 +42,61 @@ const NETWORK_EDGES: [number, number][] = [
 
 function CinematicCamera() {
   const progress = useScrollProgress();
-  const lookAt = useRef(new THREE.Vector3(5.5, 0.3, -4));
+  const lookAt = useRef(new THREE.Vector3(2.8, 0, 0));
+  const fovTarget = useRef(48);
 
   useFrame((state) => {
     const t = progress;
-    const intro = Math.min(state.clock.elapsedTime / 2.8, 1);
+    const vel = getScrollVelocity();
+    const intro = Math.min(state.clock.elapsedTime / 1.8, 1);
     const easeIntro = 1 - Math.pow(1 - intro, 3);
-    const orbit = state.clock.elapsedTime * 0.12;
+    const orbit = state.clock.elapsedTime * 0.18;
+    const { pointer } = state;
 
-    const heroX = 4.5 + Math.cos(orbit) * 1.2;
-    const heroY = 1.2 + Math.sin(orbit * 0.7) * 0.3 + state.pointer.y * 0.35;
-    const heroZ = 10 - easeIntro * 1.5;
+    // Hero: camera left-of-center, framing sentinel on the right (Igloo-style)
+    const heroX = -2.2 + Math.cos(orbit) * 0.5 + pointer.x * 0.3;
+    const heroY = 0.6 + Math.sin(orbit * 0.6) * 0.2 + pointer.y * 0.35;
+    const heroZ = 7.5 - easeIntro * 0.8;
 
-    const scrollX = 6.5 + Math.sin(t * Math.PI * 1.4) * 1.5 + state.pointer.x * 0.6;
-    const scrollY = 1.2 + Math.sin(t * Math.PI) * 0.6;
-    const scrollZ = THREE.MathUtils.lerp(8, -32, t);
+    const scrollX = 4 + Math.sin(t * Math.PI * 1.4) * 1.5 + pointer.x * 0.5;
+    const scrollY = 1 + Math.sin(t * Math.PI) * 0.5 + vel * 8;
+    const scrollZ = THREE.MathUtils.lerp(6, -30, t);
 
-    const x = THREE.MathUtils.lerp(heroX, scrollX, t);
+    const x = THREE.MathUtils.lerp(heroX, scrollX, t) + vel * 3;
     const y = THREE.MathUtils.lerp(heroY, scrollY, t);
     const z = THREE.MathUtils.lerp(heroZ, scrollZ, t);
 
-    state.camera.position.lerp(new THREE.Vector3(x, y, z), 0.045);
+    const lerpSpeed = t < 0.06 ? 0.12 : 0.06;
+    state.camera.position.lerp(new THREE.Vector3(x, y, z), lerpSpeed);
     lookAt.current.set(
-      THREE.MathUtils.lerp(7.2, 6.5 + t * 0.5, t),
-      THREE.MathUtils.lerp(0.6, 0.2, t),
-      THREE.MathUtils.lerp(-0.5, -18 - t * 14, t)
+      THREE.MathUtils.lerp(2.8, 6 + t * 0.5, t),
+      THREE.MathUtils.lerp(0, 0.2, t),
+      THREE.MathUtils.lerp(0, -16 - t * 12, t)
     );
     state.camera.lookAt(lookAt.current);
+
+    fovTarget.current = THREE.MathUtils.lerp(fovTarget.current, 48 + Math.abs(vel) * 160, 0.08);
+    if ('fov' in state.camera) {
+      const cam = state.camera as THREE.PerspectiveCamera;
+      cam.fov = THREE.MathUtils.lerp(cam.fov, fovTarget.current, 0.1);
+      cam.updateProjectionMatrix();
+    }
   });
 
   return null;
+}
+
+function DynamicFog() {
+  const progress = useScrollProgress();
+
+  useFrame(({ scene }) => {
+    if (scene.fog instanceof THREE.Fog) {
+      scene.fog.near = THREE.MathUtils.lerp(45, 20, progress);
+      scene.fog.far = THREE.MathUtils.lerp(90, 55, progress);
+    }
+  });
+
+  return <fog attach="fog" args={['#010208', 45, 90]} />;
 }
 
 function HoloPanel({
@@ -118,52 +148,6 @@ function HoloPanel({
           {sub}
         </Text>
       </Billboard>
-    </group>
-  );
-}
-
-function ShieldCore() {
-  const core = useRef<THREE.Group>(null);
-  const pulse = useRef(0);
-
-  useFrame((state) => {
-    if (!core.current) return;
-    pulse.current = 0.85 + Math.sin(state.clock.elapsedTime * 2) * 0.15;
-    core.current.rotation.y = state.clock.elapsedTime * 0.18;
-    core.current.children.forEach((child, i) => {
-      if (child instanceof THREE.Mesh && child.geometry.type === 'TorusGeometry') {
-        child.rotation.z = state.clock.elapsedTime * (0.15 + i * 0.05) * (i % 2 === 0 ? 1 : -1);
-      }
-    });
-  });
-
-  return (
-    <group ref={core} position={[5.5, 0.4, -2]}>
-      {[2.2, 1.75, 1.3].map((r, i) => (
-        <mesh key={i} rotation={[Math.PI / 2, 0, i * 0.3]}>
-          <torusGeometry args={[r, 0.025, 8, 80]} />
-          <meshBasicMaterial color={i % 2 === 0 ? '#34d399' : '#22d3ee'} transparent opacity={0.35 + i * 0.1} />
-        </mesh>
-      ))}
-      <mesh>
-        <icosahedronGeometry args={[0.95, 1]} />
-        <meshStandardMaterial
-          color="#010208"
-          emissive="#22d3ee"
-          emissiveIntensity={1.8 * pulse.current}
-          metalness={0.95}
-          roughness={0.08}
-          wireframe
-        />
-      </mesh>
-      <mesh scale={1.15}>
-        <icosahedronGeometry args={[0.95, 0]} />
-        <meshBasicMaterial color="#34d399" wireframe transparent opacity={0.18} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[1.05, 1.12, 6]} />
-        <meshBasicMaterial color="#34d399" transparent opacity={0.35} side={THREE.DoubleSide} />
-      </mesh>
     </group>
   );
 }
@@ -249,39 +233,6 @@ function StreamParticles({ count = 120 }: { count?: number }) {
   );
 }
 
-function CyberTunnel() {
-  const progress = useScrollProgress();
-  const groupRef = useRef<THREE.Group>(null);
-
-  const rings = useMemo(
-    () =>
-      Array.from({ length: 40 }, (_, i) => ({
-        z: -i * 1.05,
-        r: 2.4 + (i % 6) * 0.2,
-        color: i % 2 === 0 ? '#34d399' : '#22d3ee',
-      })),
-    []
-  );
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.position.set(5.5, 0, THREE.MathUtils.lerp(0, 20, progress));
-      groupRef.current.rotation.z = state.clock.elapsedTime * 0.02;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {rings.map((ring, i) => (
-        <mesh key={i} position={[0, 0, ring.z]} rotation={[Math.PI / 2, 0, i * 0.04]}>
-          <torusGeometry args={[ring.r, 0.02, 8, 72]} />
-          <meshBasicMaterial color={ring.color} transparent opacity={0.4} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 interface CyberEcosystemProps {
   lowPower?: boolean;
 }
@@ -292,20 +243,23 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
   return (
     <>
       <color attach="background" args={['#010208']} />
-      <fog attach="fog" args={['#010208', 18, 60]} />
+      <DynamicFog />
 
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 6]} intensity={3} color="#34d399" />
-      <pointLight position={[2, -2, -8]} intensity={2.5} color="#22d3ee" />
+      <ambientLight intensity={0.7} />
+      <pointLight position={[0, 4, 6]} intensity={4} color="#34d399" />
+      <pointLight position={[10, 10, 6]} intensity={3.5} color="#34d399" />
+      <pointLight position={[2, -2, -8]} intensity={3} color="#22d3ee" />
       <spotLight position={[8, 16, -4]} angle={0.45} penumbra={0.8} intensity={1.5} color="#34d399" />
       <spotLight position={[4, -6, -12]} angle={0.5} penumbra={1} intensity={0.8} color="#6366f1" />
 
       <CinematicCamera />
+      <HeroSentinel />
       <SpeakerPhotoGallery3D lowPower={lowPower} />
-      <ShieldCore />
+      <NexusCore />
+      <NeuralPulseField lowPower={lowPower} />
       <DataNetwork lowPower={lowPower} />
       <StreamParticles count={lowPower ? 60 : 140} />
-      <CyberTunnel />
+      <InstancedTunnel />
 
       {HOLO_PANELS.map((panel, i) => (
         <HoloPanel key={panel.label} {...panel} delay={i * 0.7} />
@@ -314,8 +268,13 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       <SectionVignettes />
 
       {WORLD_SECTORS.map((sector, i) => {
-        const reveal = i === 0 ? 1 : THREE.MathUtils.clamp((progress - (i - 0.4) * 0.1) * 4.5, 0, 1);
-        if (reveal < 0.06) return null;
+        const reveal =
+          i === 0
+            ? 1
+            : i <= 2
+              ? THREE.MathUtils.clamp(0.55 + progress * 2, 0.55, 1)
+              : THREE.MathUtils.clamp((progress - (i - 0.6) * 0.1) * 4.5, 0, 1);
+        if (reveal < 0.08) return null;
         return (
           <InteractiveNode
             key={sector.sectionId}
@@ -331,7 +290,7 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       })}
 
       <Grid
-        position={[5.5, -2.8, -10]}
+        position={[2.5, -2.8, -4]}
         infiniteGrid
         cellSize={0.5}
         cellThickness={0.7}

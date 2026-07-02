@@ -5,8 +5,8 @@ import * as THREE from 'three';
 import { SPEAKING_PHOTOS } from '../../data/speakingMedia';
 import { useScrollProgress } from '../../hooks/useScrollProgress';
 
-const ORBIT_CENTER: [number, number, number] = [7.2, 0.6, -0.5];
-const ORBIT_RADIUS = 5.2;
+const ORBIT_CENTER: [number, number, number] = [2.8, 0.4, 0];
+const ORBIT_RADIUS = 4.2;
 
 function SwirlRing({ radius, speed, color }: { radius: number; speed: number; color: string }) {
   const ref = useRef<THREE.Mesh>(null);
