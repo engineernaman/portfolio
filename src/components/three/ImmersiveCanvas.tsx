@@ -41,7 +41,7 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
   if (failed) return null;
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none" id="immersive-canvas" aria-hidden>
+    <div className="fixed inset-0 z-[1] pointer-events-none" id="immersive-canvas">
       <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}

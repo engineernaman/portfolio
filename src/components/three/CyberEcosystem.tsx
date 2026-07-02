@@ -9,6 +9,7 @@ import SpeakerPhotoGallery3D from './SpeakerPhotoGallery3D';
 import NexusCore from './NexusCore';
 import InstancedTunnel from './InstancedTunnel';
 import NeuralPulseField from './NeuralPulseField';
+import ScrollDepthAura from './ScrollDepthAura';
 import { useScrollProgress } from '../../hooks/useScrollProgress';
 import { getScrollVelocity } from '../../lib/scrollState';
 
@@ -59,7 +60,7 @@ function CinematicCamera() {
 
     const scrollX = 4 + Math.sin(t * Math.PI * 1.4) * 1.5 + pointer.x * 0.5;
     const scrollY = 1 + Math.sin(t * Math.PI) * 0.5 + vel * 8;
-    const scrollZ = THREE.MathUtils.lerp(6, -30, t);
+    const scrollZ = THREE.MathUtils.lerp(6, -38, t);
 
     const x = THREE.MathUtils.lerp(heroX, scrollX, t) + vel * 3;
     const y = THREE.MathUtils.lerp(heroY, scrollY, t);
@@ -70,7 +71,7 @@ function CinematicCamera() {
     lookAt.current.set(
       THREE.MathUtils.lerp(2.8, 6 + t * 0.5, t),
       THREE.MathUtils.lerp(0, 0.2, t),
-      THREE.MathUtils.lerp(0, -16 - t * 12, t)
+      THREE.MathUtils.lerp(0, -22 - t * 18, t)
     );
     state.camera.lookAt(lookAt.current);
 
@@ -90,12 +91,12 @@ function DynamicFog() {
 
   useFrame(({ scene }) => {
     if (scene.fog instanceof THREE.Fog) {
-      scene.fog.near = THREE.MathUtils.lerp(45, 20, progress);
-      scene.fog.far = THREE.MathUtils.lerp(90, 55, progress);
+      scene.fog.near = THREE.MathUtils.lerp(45, 28, progress);
+      scene.fog.far = THREE.MathUtils.lerp(95, 75, progress);
     }
   });
 
-  return <fog attach="fog" args={['#010208', 45, 90]} />;
+  return <fog attach="fog" args={['#010208', 45, 95]} />;
 }
 
 function HoloPanel({
@@ -256,7 +257,8 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       <NexusCore />
       <NeuralPulseField lowPower={lowPower} />
       <DataNetwork lowPower={lowPower} />
-      <StreamParticles count={lowPower ? 60 : 140} />
+      <StreamParticles count={lowPower ? 80 : 180} />
+      <ScrollDepthAura count={lowPower ? 200 : 450} />
       <InstancedTunnel />
 
       {HOLO_PANELS.map((panel, i) => (
@@ -266,13 +268,8 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
       <SectionVignettes />
 
       {WORLD_SECTORS.map((sector, i) => {
-        const reveal =
-          i === 0
-            ? 1
-            : i <= 2
-              ? THREE.MathUtils.clamp(0.55 + progress * 2, 0.55, 1)
-              : THREE.MathUtils.clamp((progress - (i - 0.6) * 0.1) * 4.5, 0, 1);
-        if (reveal < 0.08) return null;
+        const threshold = i * 0.12;
+        const reveal = THREE.MathUtils.clamp((progress - threshold) * 3.5 + 0.35, 0.35, 1);
         return (
           <InteractiveNode
             key={sector.sectionId}
@@ -287,21 +284,21 @@ const CyberEcosystem = ({ lowPower = false }: CyberEcosystemProps) => {
         );
       })}
 
-      <Grid
-        position={[2.5, -2.8, -4]}
-        infiniteGrid
-        cellSize={0.5}
-        cellThickness={0.7}
-        cellColor="#34d399"
-        sectionSize={2.5}
-        sectionThickness={1.4}
-        sectionColor="#22d3ee"
-        fadeDistance={45}
-        fadeStrength={1}
-      />
+    <Grid
+      position={[2.5, -2.8, -4]}
+      infiniteGrid
+      cellSize={0.5}
+      cellThickness={0.55}
+      cellColor="#34d399"
+      sectionSize={2.5}
+      sectionThickness={1.2}
+      sectionColor="#22d3ee"
+      fadeDistance={55}
+      fadeStrength={0.85}
+    />
 
-      <Stars radius={80} depth={50} count={lowPower ? 1200 : 3500} factor={4} saturation={0} fade speed={0.5} />
-      <Sparkles count={lowPower ? 60 : 160} scale={[28, 14, 50]} position={[5, 0, -8]} size={3} speed={0.4} color="#22d3ee" opacity={0.65} />
+    <Stars radius={100} depth={60} count={lowPower ? 1500 : 4000} factor={4} saturation={0} fade speed={0.55} />
+    <Sparkles count={lowPower ? 80 : 200} scale={[28, 14, 50]} position={[5, 0, -8]} size={3.5} speed={0.45} color="#22d3ee" opacity={0.55} />
 
       <PostFX lowPower={lowPower} />
     </>

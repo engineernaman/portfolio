@@ -137,12 +137,12 @@ function AppContent() {
       )}
 
       {isHome && (
-        <div className="relative z-10">
+        <div className="relative z-10 pointer-events-none">
           <HeroExperience reducedMotion={reducedMotion} />
           <DomainMarquee />
 
-          <div className="relative pointer-events-auto">
-            <div className="relative">
+          <div className="relative pointer-events-none">
+            <div className="relative pointer-events-auto">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>
               <AnimatedSection><Ventures /></AnimatedSection>

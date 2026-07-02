@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import HeroPerimeterCanvas from './three/HeroPerimeterCanvas';
+import HeroThoughtBookCanvas from './three/HeroThoughtBookCanvas';
 
 interface HeroRightStageProps {
   reducedMotion?: boolean;
@@ -13,7 +13,7 @@ const HeroRightStage = ({ reducedMotion = false }: HeroRightStageProps) => (
     transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
     className="w-full h-full min-h-[380px] lg:min-h-[calc(100vh-9rem)] pointer-events-auto"
   >
-    <HeroPerimeterCanvas reducedMotion={reducedMotion} />
+    <HeroThoughtBookCanvas reducedMotion={reducedMotion} />
   </motion.div>
 );
 

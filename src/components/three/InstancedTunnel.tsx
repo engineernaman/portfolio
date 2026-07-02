@@ -35,8 +35,9 @@ function InstancedTunnel() {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.position.set(5.5, 0, THREE.MathUtils.lerp(0, 22, progress));
-      groupRef.current.rotation.z = state.clock.elapsedTime * 0.018;
+      const camZ = THREE.MathUtils.lerp(7.5, -38, progress);
+      groupRef.current.position.set(5.5 + Math.sin(progress * Math.PI) * 1.2, 0, camZ * 0.35 + 8);
+      groupRef.current.rotation.z = state.clock.elapsedTime * 0.022;
     }
 
     if (!meshRef.current) return;
@@ -56,7 +57,7 @@ function InstancedTunnel() {
     <group ref={groupRef}>
       <instancedMesh ref={meshRef} args={[undefined, undefined, RING_COUNT]}>
         <torusGeometry args={[1, 0.018, 6, 64]} />
-        <meshBasicMaterial color="#22d3ee" transparent opacity={0.38} />
+        <meshBasicMaterial color="#22d3ee" transparent opacity={0.52} />
       </instancedMesh>
     </group>
   );
