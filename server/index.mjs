@@ -170,6 +170,57 @@ app.post('/api/visitor-pulse', async (req, res) => {
   });
 });
 
+const PIPED_INSTANCES = [
+  'https://pipedapi.kavin.rocks',
+  'https://pipedapi.adminforge.de',
+  'https://api.piped.yt',
+];
+
+async function searchYouTubeServer(query) {
+  for (const base of PIPED_INSTANCES) {
+    try {
+      const res = await fetch(
+        `${base}/search?q=${encodeURIComponent(query)}&filter=music_songs`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      if (!res.ok) continue;
+      const data = await res.json();
+      const items = data.items ?? data.relatedStreams ?? [];
+      return items.slice(0, 10).map((v) => {
+        const raw = v.url || v.id || '';
+        const match = String(raw).match(/([a-zA-Z0-9_-]{11})/);
+        const id = match?.[1];
+        if (!id) return null;
+        return {
+          id: `yt-${id}`,
+          title: v.title || 'YouTube track',
+          artist: v.uploaderName || v.uploader || 'YouTube',
+          thumbnail: v.thumbnail,
+          youtubeId: id,
+          source: 'youtube',
+        };
+      }).filter(Boolean);
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
+app.get('/api/music/search', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  if (!q) return res.json({ results: [] });
+  if (!rateLimit(getClientIp(req), 30, 60000)) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
+  try {
+    const results = await searchYouTubeServer(q);
+    res.json({ results });
+  } catch {
+    res.status(502).json({ results: [] });
+  }
+});
+
 const distPath = join(__dirname, '..', 'dist');
 if (existsSync(distPath)) {
   app.use(express.static(distPath));

@@ -45,13 +45,13 @@ function CinematicCamera() {
     const easeIntro = 1 - Math.pow(1 - intro, 3);
     const orbit = state.clock.elapsedTime * 0.12;
 
-    const heroX = 3.5 + Math.cos(orbit) * 1.8;
-    const heroY = 1.4 + Math.sin(orbit * 0.7) * 0.35 + state.pointer.y * 0.4;
-    const heroZ = 9 - easeIntro * 2;
+    const heroX = 4.5 + Math.cos(orbit) * 1.2;
+    const heroY = 1.2 + Math.sin(orbit * 0.7) * 0.3 + state.pointer.y * 0.35;
+    const heroZ = 10 - easeIntro * 1.5;
 
-    const scrollX = 5 + Math.sin(t * Math.PI * 1.4) * 2 + state.pointer.x * 0.8;
-    const scrollY = 1 + Math.sin(t * Math.PI) * 0.8;
-    const scrollZ = THREE.MathUtils.lerp(7, -32, t);
+    const scrollX = 6.5 + Math.sin(t * Math.PI * 1.4) * 1.5 + state.pointer.x * 0.6;
+    const scrollY = 1.2 + Math.sin(t * Math.PI) * 0.6;
+    const scrollZ = THREE.MathUtils.lerp(8, -32, t);
 
     const x = THREE.MathUtils.lerp(heroX, scrollX, t);
     const y = THREE.MathUtils.lerp(heroY, scrollY, t);
@@ -59,9 +59,9 @@ function CinematicCamera() {
 
     state.camera.position.lerp(new THREE.Vector3(x, y, z), 0.045);
     lookAt.current.set(
-      THREE.MathUtils.lerp(5.8, 5.5 + t * 0.5, t),
-      THREE.MathUtils.lerp(0.5, 0, t),
-      THREE.MathUtils.lerp(0, -18 - t * 14, t)
+      THREE.MathUtils.lerp(7.2, 6.5 + t * 0.5, t),
+      THREE.MathUtils.lerp(0.6, 0.2, t),
+      THREE.MathUtils.lerp(-0.5, -18 - t * 14, t)
     );
     state.camera.lookAt(lookAt.current);
   });

@@ -41,9 +41,9 @@ const HeroExperience = ({ reducedMotion: _reducedMotion = false }: HeroExperienc
   }, []);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0">
-      <div className="relative z-30 w-full max-w-xl px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
-        <div className="rounded-2xl border border-emerald-500/25 bg-[rgba(6,10,16,0.52)] backdrop-blur-lg p-6 sm:p-8 shadow-[0_8px_48px_rgba(0,0,0,0.35)]">
+    <section id="home" className="relative min-h-screen flex items-center pt-20 pb-16 lg:pt-0 lg:pb-0 lg:justify-start">
+      <div className="relative z-30 w-full max-w-lg px-6 sm:px-10 lg:px-12 lg:pl-14 py-8 pointer-events-none">
+        <div className="rounded-2xl border border-emerald-500/20 bg-[rgba(6,10,16,0.38)] backdrop-blur-md p-6 sm:p-8 shadow-[0_8px_48px_rgba(0,0,0,0.25)]">
           <p className="hero-line font-mono text-[11px] tracking-[0.2em] text-emerald-400 uppercase mb-5 opacity-0 font-medium">
             {profile.brand} · security & technology
           </p>

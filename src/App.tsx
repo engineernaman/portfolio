@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import CommandNav from './components/CommandNav';
+import ImmersiveNav from './components/ImmersiveNav';
 import About from './components/About';
 import Experience from './components/Experience';
 import Ventures from './components/Ventures';
@@ -51,10 +51,10 @@ function AppContent() {
   }, [openIntelLab]);
 
   useEffect(() => {
-    if (reducedMotion || webgl.capability === 'none') {
+    if (webgl.capability === 'none') {
       setShow3d(false);
     }
-  }, [reducedMotion, webgl.capability]);
+  }, [webgl.capability]);
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
@@ -83,7 +83,7 @@ function AppContent() {
 
       <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="pointer-events-auto">
-          <CommandNav activePage={page} />
+          <ImmersiveNav activePage={page} />
         </div>
       </div>
 
@@ -107,7 +107,7 @@ function AppContent() {
           <DomainMarquee />
 
           <div className="relative pointer-events-auto">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/15 to-void/55 pointer-events-none" aria-hidden />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/8 to-void/45 pointer-events-none" aria-hidden />
             <div className="relative">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>

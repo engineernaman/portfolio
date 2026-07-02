@@ -65,7 +65,7 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
           gl={createRenderer}
           shadows={!lowPower}
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [3.5, 1.4, 9], fov: 50 }}
+          camera={{ position: [4.5, 1.2, 10], fov: 52 }}
           performance={{ min: 0.5 }}
           style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
           eventSource={document.body}
