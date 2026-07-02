@@ -26,7 +26,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           style={{ y: cardY, opacity: cardOpacity }}
           className="w-full lg:w-[min(100%,520px)] shrink-0 px-6 sm:px-10 lg:px-12 pt-32 pb-16 flex items-center pointer-events-auto"
         >
-          <div className="w-full rounded-2xl border border-white/10 bg-[rgba(6,10,16,0.82)] backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+          <div className="w-full rounded-2xl border border-white/12 bg-[rgba(4,8,14,0.88)] backdrop-blur-xl p-7 sm:p-9 shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
             <p className="font-mono text-[11px] tracking-[0.24em] text-emerald-400/80 uppercase mb-6 flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" />
               {profile.brand}
@@ -90,7 +90,7 @@ const HeroExperience = ({ reducedMotion = false }: HeroExperienceProps) => {
           </div>
         </motion.div>
 
-        <div className="hidden lg:flex flex-1 items-center justify-center px-6 lg:px-8 lg:pr-10 pt-24 pb-12 min-h-[420px] pointer-events-auto">
+        <div className="hidden lg:flex flex-1 items-center justify-center px-4 lg:px-6 xl:pr-8 pt-24 pb-12 min-h-[420px] pointer-events-auto">
           <HeroRightStage reducedMotion={reducedMotion} />
         </div>
       </div>

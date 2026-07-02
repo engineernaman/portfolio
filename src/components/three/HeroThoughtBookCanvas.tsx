@@ -1,33 +1,46 @@
-import { Suspense, useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, RoundedBox, Text } from '@react-three/drei';
+import { OrbitControls, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
-import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
-import { BOOK_SUBTITLE, BOOK_TITLE, leaderThoughts } from '@/data/leaderThoughts';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  BOOK_COVER_IMAGE,
+  BOOK_SUBTITLE,
+  BOOK_TITLE,
+  leaderThoughts,
+} from '@/data/leaderThoughts';
+import { usePageTexture } from '@/lib/usePageTexture';
+import type { PageDrawContent } from '@/lib/bookPageTexture';
 
-const PAGE_W = 1.4;
-const PAGE_H = 1.9;
+const PAGE_W = 1.45;
+const PAGE_H = 2;
 
-type BookPageContent = {
-  title: string;
-  body: string;
-  meta?: string;
-  isCover?: boolean;
-};
-
-const PAGES: BookPageContent[] = [
+const PAGES: PageDrawContent[] = [
   {
     title: BOOK_TITLE,
     body: BOOK_SUBTITLE,
-    meta: `${leaderThoughts.length} principles · flip to read`,
+    meta: `${leaderThoughts.length} principles`,
+    image: BOOK_COVER_IMAGE,
     isCover: true,
   },
-  ...leaderThoughts.map((t) => ({
+  ...leaderThoughts.map((t, i) => ({
     title: t.title,
     body: t.thought,
     meta: t.source,
+    image: t.image,
+    index: i + 1,
   })),
 ];
+
+function PageFace({ content }: { content: PageDrawContent }) {
+  const map = usePageTexture(content);
+  return (
+    <mesh position={[0, 0, 0.016]} renderOrder={2}>
+      <planeGeometry args={[PAGE_W * 0.94, PAGE_H * 0.94]} />
+      <meshBasicMaterial map={map} toneMapped={false} />
+    </mesh>
+  );
+}
 
 function BookMesh({
   displayPage,
@@ -41,57 +54,63 @@ function BookMesh({
   flipping: boolean;
 }) {
   const book = useRef<THREE.Group>(null);
+  const nextPage = displayPage + flipDir;
+  const showFlip = flipping && nextPage >= 0 && nextPage < PAGES.length;
 
   useFrame((state) => {
     if (!book.current) return;
     const t = state.clock.elapsedTime;
-    book.current.rotation.y = Math.sin(t * 0.15) * 0.05 + 0.1;
-    book.current.rotation.x = Math.sin(t * 0.2) * 0.03 - 0.05;
-    book.current.position.y = Math.sin(t * 0.5) * 0.03;
+    book.current.rotation.y = Math.sin(t * 0.12) * 0.04 + 0.08;
+    book.current.rotation.x = Math.sin(t * 0.18) * 0.025 - 0.04;
+    book.current.position.y = Math.sin(t * 0.45) * 0.025;
   });
 
-  const nextPage = displayPage + flipDir;
-  const showFlip = flipping && nextPage >= 0 && nextPage < PAGES.length;
-
   return (
-    <group ref={book}>
-      <RoundedBox args={[PAGE_W * 2 + 0.2, PAGE_H + 0.15, 0.12]} radius={0.04} position={[0, 0, -0.08]}>
-        <meshStandardMaterial color="#041a12" emissive="#34d399" emissiveIntensity={0.2} metalness={0.7} roughness={0.35} />
+    <group ref={book} scale={1.15}>
+      <RoundedBox args={[PAGE_W * 2 + 0.22, PAGE_H + 0.14, 0.14]} radius={0.04} position={[0, 0, -0.09]}>
+        <meshStandardMaterial color="#041a12" emissive="#34d399" emissiveIntensity={0.35} metalness={0.75} roughness={0.35} />
       </RoundedBox>
 
       <group position={[-PAGE_W / 2 - 0.02, 0, 0.02]}>
-        <RoundedBox args={[PAGE_W, PAGE_H, 0.02]} radius={0.01}>
-          <meshStandardMaterial color="#ecfdf5" roughness={0.9} />
+        <RoundedBox args={[PAGE_W, PAGE_H, 0.022]} radius={0.012}>
+          <meshStandardMaterial color="#ecfdf5" roughness={0.95} emissive="#ffffff" emissiveIntensity={0.08} />
         </RoundedBox>
+        {displayPage > 0 && <PageFace content={PAGES[displayPage - 1]} />}
       </group>
 
       {!showFlip && (
-        <group position={[PAGE_W / 2 + 0.02, 0, 0.03]}>
-          <RoundedBox args={[PAGE_W, PAGE_H, 0.02]} radius={0.01}>
-            <meshStandardMaterial color="#f8fafc" roughness={0.9} />
+        <group position={[PAGE_W / 2 + 0.02, 0, 0.035]}>
+          <RoundedBox args={[PAGE_W, PAGE_H, 0.022]} radius={0.012}>
+            <meshStandardMaterial color="#f8fafc" roughness={0.95} emissive="#ffffff" emissiveIntensity={0.1} />
           </RoundedBox>
+          <PageFace content={PAGES[displayPage]} />
         </group>
       )}
 
       {showFlip && (
-        <group position={[0, 0, 0.05]}>
+        <group position={[0, 0, 0.06]}>
           <group rotation={[0, -flipProgress * Math.PI * flipDir, 0]}>
             <group position={[PAGE_W / 2, 0, 0]}>
-              <RoundedBox args={[PAGE_W, PAGE_H, 0.02]} radius={0.01}>
-                <meshStandardMaterial color="#f8fafc" roughness={0.9} side={THREE.DoubleSide} />
+              <RoundedBox args={[PAGE_W, PAGE_H, 0.022]} radius={0.012}>
+                <meshStandardMaterial color="#f8fafc" roughness={0.95} side={THREE.DoubleSide} emissive="#fff" emissiveIntensity={0.08} />
               </RoundedBox>
+              <PageFace content={flipDir > 0 ? PAGES[displayPage] : PAGES[nextPage]} />
             </group>
           </group>
+          {flipProgress > 0.5 && (
+            <group position={[PAGE_W / 2 + 0.02, 0, 0.01]}>
+              <RoundedBox args={[PAGE_W, PAGE_H, 0.022]} radius={0.012}>
+                <meshStandardMaterial color="#f8fafc" roughness={0.95} emissive="#fff" emissiveIntensity={0.08} />
+              </RoundedBox>
+              <PageFace content={PAGES[nextPage]} />
+            </group>
+          )}
         </group>
       )}
 
-      <RoundedBox args={[0.12, PAGE_H + 0.05, 0.14]} radius={0.02} position={[0, 0, 0.04]}>
-        <meshStandardMaterial color="#022c22" emissive="#34d399" emissiveIntensity={0.35} metalness={0.85} />
+      <RoundedBox args={[0.13, PAGE_H + 0.06, 0.16]} radius={0.02} position={[0, 0, 0.05]}>
+        <meshStandardMaterial color="#022c22" emissive="#34d399" emissiveIntensity={0.5} metalness={0.85} />
       </RoundedBox>
-
-      <Text position={[0, PAGE_H / 2 + 0.2, 0.1]} fontSize={0.08} color="#34d399" anchorX="center" fillOpacity={0.8}>
-        SoumySec
-      </Text>
     </group>
   );
 }
@@ -100,12 +119,10 @@ function BookInner({
   onFlip,
   reducedMotion,
   onRegisterFlip,
-  onPageChange,
 }: {
   onFlip: (dir: 1 | -1) => void;
   reducedMotion: boolean;
   onRegisterFlip: (fn: (dir: 1 | -1) => void) => void;
-  onPageChange: (page: number) => void;
 }) {
   const flipRef = useRef(0);
   const flipping = useRef(false);
@@ -129,17 +146,12 @@ function BookInner({
     onRegisterFlip(requestFlip);
   }, [onRegisterFlip, requestFlip]);
 
-  useEffect(() => {
-    onPageChange(displayPage);
-  }, [displayPage, onPageChange]);
-
   useFrame((_, delta) => {
     if (!flipping.current) return;
-    flipRef.current = Math.min(1, flipRef.current + delta * (reducedMotion ? 3.5 : 2.4));
+    flipRef.current = Math.min(1, flipRef.current + delta * (reducedMotion ? 3.5 : 2.2));
     setFlipProgress(flipRef.current);
     if (flipRef.current >= 1) {
-      const next = displayPage + flipDir.current;
-      setDisplayPage(next);
+      setDisplayPage((p) => p + flipDir.current);
       onFlip(flipDir.current);
       flipping.current = false;
       flipRef.current = 0;
@@ -149,30 +161,13 @@ function BookInner({
 
   return (
     <group>
-      <BookMesh
-        displayPage={displayPage}
-        flipProgress={flipProgress}
-        flipDir={flipDir.current}
-        flipping={flipping.current}
-      />
-      <mesh
-        position={[-PAGE_W * 0.75, 0, 0.2]}
-        onClick={(e) => {
-          e.stopPropagation();
-          requestFlip(-1);
-        }}
-      >
-        <planeGeometry args={[PAGE_W * 0.6, PAGE_H]} />
+      <BookMesh displayPage={displayPage} flipProgress={flipProgress} flipDir={flipDir.current} flipping={flipping.current} />
+      <mesh position={[-PAGE_W * 0.75, 0, 0.25]} onClick={(e) => { e.stopPropagation(); requestFlip(-1); }}>
+        <planeGeometry args={[PAGE_W * 0.65, PAGE_H]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
-      <mesh
-        position={[PAGE_W * 0.75, 0, 0.2]}
-        onClick={(e) => {
-          e.stopPropagation();
-          requestFlip(1);
-        }}
-      >
-        <planeGeometry args={[PAGE_W * 0.6, PAGE_H]} />
+      <mesh position={[PAGE_W * 0.75, 0, 0.25]} onClick={(e) => { e.stopPropagation(); requestFlip(1); }}>
+        <planeGeometry args={[PAGE_W * 0.65, PAGE_H]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
     </group>
@@ -185,92 +180,61 @@ interface HeroThoughtBookCanvasProps {
 
 const HeroThoughtBookCanvas = ({ reducedMotion = false }: HeroThoughtBookCanvasProps) => {
   const [page, setPage] = useState(0);
-  const [displayPage, setDisplayPage] = useState(0);
   const flipRef = useRef<(dir: 1 | -1) => void>(() => {});
   const maxPage = PAGES.length - 1;
-  const content = PAGES[displayPage];
 
   return (
-    <div className="relative w-full h-full min-h-[380px] lg:min-h-[calc(100vh-9rem)] flex flex-col">
+    <div className="relative w-full h-full min-h-[400px] lg:min-h-[calc(100vh-8rem)] flex flex-col">
       <p className="font-mono text-[9px] tracking-[0.2em] text-emerald-400/70 uppercase text-center mb-2 pointer-events-none">
-        The Operator&apos;s Codex
+        The Operator&apos;s Codex · flip the pages
       </p>
 
-      <div className="flex-1 min-h-[240px] relative">
+      <div className="flex-1 min-h-[360px]">
         <Canvas
           dpr={reducedMotion ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [0, 0.15, 5.2], fov: 36 }}
+          camera={{ position: [0, 0.1, 5.4], fov: 34 }}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           style={{ width: '100%', height: '100%', background: 'transparent' }}
         >
-          <ambientLight intensity={1} />
-          <directionalLight position={[3, 5, 4]} intensity={1.4} color="#fff7ed" />
-          <pointLight position={[-2, 1, 3]} intensity={4} color="#34d399" />
-          <Suspense fallback={null}>
-            <BookInner
-              onFlip={(dir) => setPage((p) => Math.min(maxPage, Math.max(0, p + dir)))}
-              reducedMotion={reducedMotion}
-              onRegisterFlip={(fn) => {
-                flipRef.current = fn;
-              }}
-              onPageChange={setDisplayPage}
-            />
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              autoRotate={!reducedMotion}
-              autoRotateSpeed={0.28}
-              maxPolarAngle={Math.PI / 1.6}
-              minPolarAngle={Math.PI / 3.4}
-            />
-          </Suspense>
+          <ambientLight intensity={1.4} />
+          <directionalLight position={[3, 6, 5]} intensity={2} color="#fff7ed" />
+          <pointLight position={[-2, 2, 4]} intensity={6} color="#34d399" />
+          <pointLight position={[2, -1, 3]} intensity={3} color="#22d3ee" />
+          <BookInner
+            onFlip={(dir) => setPage((p) => Math.min(maxPage, Math.max(0, p + dir)))}
+            reducedMotion={reducedMotion}
+            onRegisterFlip={(fn) => { flipRef.current = fn; }}
+          />
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            autoRotate={!reducedMotion}
+            autoRotateSpeed={0.22}
+            maxPolarAngle={Math.PI / 1.55}
+            minPolarAngle={Math.PI / 3.2}
+          />
         </Canvas>
       </div>
 
-      {/* Readable thought panel — always visible HTML */}
-      <div className="mx-2 mt-3 mb-2 rounded-xl border border-emerald-500/20 bg-[#f8fafc] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.35)] pointer-events-none">
-        {content.isCover ? (
-          <div className="text-center">
-            <BookOpen className="w-5 h-5 text-emerald-700 mx-auto mb-2" />
-            <p className="font-display text-sm font-bold text-slate-900">{content.title}</p>
-            <p className="text-[11px] text-emerald-800 mt-1 font-mono">{content.body}</p>
-            <p className="text-[10px] text-slate-500 mt-2 font-mono">{content.meta}</p>
-          </div>
-        ) : (
-          <>
-            <p className="font-mono text-[9px] uppercase tracking-widest text-emerald-700 mb-1">
-              Principle {displayPage}
-            </p>
-            <p className="font-display text-sm font-bold text-slate-900 mb-2">{content.title}</p>
-            <p className="text-xs text-slate-700 leading-relaxed">{content.body}</p>
-            {content.meta && (
-              <p className="text-[10px] text-emerald-800/80 font-mono mt-2 pt-2 border-t border-emerald-900/10">
-                — {content.meta}
-              </p>
-            )}
-          </>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between gap-3 px-2 pb-1 pointer-events-auto">
+      <div className="flex items-center justify-between gap-3 px-2 pb-2 pointer-events-auto">
         <button
           type="button"
           onClick={() => flipRef.current(-1)}
           disabled={page <= 0}
           className="p-2 rounded-lg border border-white/10 bg-black/40 text-emerald-400 disabled:opacity-30 hover:border-emerald-500/30 transition-colors"
-          aria-label="Previous thought"
+          aria-label="Previous page"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         <p className="font-mono text-[10px] text-readable-dim text-center flex-1">
-          {displayPage === 0 ? 'Cover' : `${displayPage} / ${maxPage}`}
+          {page === 0 ? 'Cover' : `Page ${page} / ${maxPage}`}
         </p>
         <button
           type="button"
           onClick={() => flipRef.current(1)}
           disabled={page >= maxPage}
           className="p-2 rounded-lg border border-white/10 bg-black/40 text-emerald-400 disabled:opacity-30 hover:border-emerald-500/30 transition-colors"
-          aria-label="Next thought"
+          aria-label="Next page"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

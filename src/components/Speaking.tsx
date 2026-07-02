@@ -1,7 +1,7 @@
 import { Mic, Users, Monitor, Gavel, Radio, ExternalLink } from 'lucide-react';
 import SectionHeader from './ui/SectionHeader';
 import CyberPanel from './ui/CyberPanel';
-import SpeakingGalleryCanvas from './three/SpeakingGalleryCanvas';
+import SpeakingGalleryRail from './SpeakingGalleryRail';
 import {
   speakingEvents,
   speakingAudiences,
@@ -18,12 +18,14 @@ const Speaking = () => (
         title="Speaking & Stage"
         subtitle="ISS World Europe & MEA, live keynotes to thousands, competition judge."
       />
+    </div>
 
-      <CyberPanel glow="cyan" className="p-4 sm:p-6 mb-10">
-        <p className="label-cyber mb-4">Stage Gallery</p>
-        <SpeakingGalleryCanvas />
-      </CyberPanel>
+    <p className="label-cyber mb-4 px-6 container mx-auto max-w-6xl">Stage Gallery</p>
+    <div className="relative w-full mb-12 py-2">
+      <SpeakingGalleryRail />
+    </div>
 
+    <div className="container mx-auto px-6 max-w-6xl">
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
         {SPEAKING_VIDEOS.map((vid) => (
           <a

@@ -1,14 +1,13 @@
 import { useRef, useMemo, useLayoutEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getGlobalScrollProgress } from '../../lib/scrollState';
 
 const RING_COUNT = 48;
 
 function InstancedTunnel() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const progress = useScrollProgress();
 
   const { dummy, rings } = useMemo(() => {
     const d = new THREE.Object3D();
@@ -34,8 +33,9 @@ function InstancedTunnel() {
   }, [dummy, rings]);
 
   useFrame((state) => {
+    const progress = getGlobalScrollProgress();
     if (groupRef.current) {
-      const camZ = THREE.MathUtils.lerp(7.5, -38, progress);
+      const camZ = THREE.MathUtils.lerp(7.5, -40, progress);
       groupRef.current.position.set(5.5 + Math.sin(progress * Math.PI) * 1.2, 0, camZ * 0.35 + 8);
       groupRef.current.rotation.z = state.clock.elapsedTime * 0.022;
     }

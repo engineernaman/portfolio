@@ -1,9 +1,9 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, Suspense } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Image, Text, Billboard } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { SPEAKING_PHOTOS } from '../../data/speakingMedia';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getGlobalScrollProgress } from '../../lib/scrollState';
 
 const ORBIT_CENTER: [number, number, number] = [2.8, 0.4, 0];
 const ORBIT_RADIUS = 4.2;
@@ -38,7 +38,7 @@ function InteractivePhotoFrame({
 }) {
   const group = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
-  const progress = useScrollProgress();
+  const texture = useTexture(src);
   const frameW = size[0] + 0.16;
   const frameH = size[1] + 0.16;
   const baseAngle = (index / total) * Math.PI * 2;
@@ -55,6 +55,7 @@ function InteractivePhotoFrame({
 
   useFrame((state) => {
     if (!group.current) return;
+    const progress = getGlobalScrollProgress();
     const t = state.clock.elapsedTime;
     const scrollSpin = progress * Math.PI * 1.8;
     const spin = isHero ? t * 0.08 : t * 0.14 + scrollSpin;
@@ -98,22 +99,10 @@ function InteractivePhotoFrame({
         <planeGeometry args={[frameW - 0.05, frameH - 0.05]} />
         <meshBasicMaterial color={hovered ? '#34d399' : '#22d3ee'} transparent opacity={hovered ? 0.35 : 0.12} />
       </mesh>
-      <Image url={src} scale={size} transparent radius={0.04} position={[0, 0, 0.02]} />
-      {(hovered || isHero) && (
-        <Billboard follow>
-          <Text
-            position={[0, -size[1] / 2 - 0.28, 0.1]}
-            fontSize={isHero ? 0.14 : 0.11}
-            color="#34d399"
-            anchorX="center"
-            outlineWidth={0.02}
-            outlineColor="#010208"
-            maxWidth={2.4}
-          >
-            {caption}
-          </Text>
-        </Billboard>
-      )}
+      <mesh position={[0, 0, 0.02]}>
+        <planeGeometry args={size} />
+        <meshBasicMaterial map={texture} toneMapped={false} transparent />
+      </mesh>
     </group>
   );
 }
@@ -124,7 +113,6 @@ interface SpeakerPhotoGallery3DProps {
 
 const SpeakerPhotoGallery3D = ({ lowPower = false }: SpeakerPhotoGallery3DProps) => {
   const orbitRef = useRef<THREE.Group>(null);
-  const progress = useScrollProgress();
 
   const photos = useMemo(
     () => (lowPower ? SPEAKING_PHOTOS.slice(0, 5) : SPEAKING_PHOTOS),
@@ -136,6 +124,7 @@ const SpeakerPhotoGallery3D = ({ lowPower = false }: SpeakerPhotoGallery3DProps)
 
   useFrame((state) => {
     if (!orbitRef.current) return;
+    const progress = getGlobalScrollProgress();
     orbitRef.current.rotation.y = state.clock.elapsedTime * 0.04 + progress * 0.6;
     orbitRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.35) * 0.12;
   });
@@ -160,27 +149,30 @@ const SpeakerPhotoGallery3D = ({ lowPower = false }: SpeakerPhotoGallery3DProps)
       </mesh>
 
       {hero && (
-        <InteractivePhotoFrame
-          src={hero.src}
-          caption={hero.caption}
-          size={[2.8, 2.8]}
-          index={0}
-          total={1}
-          isHero
-        />
+        <Suspense fallback={null}>
+          <InteractivePhotoFrame
+            src={hero.src}
+            caption={hero.caption}
+            size={[2.8, 2.8]}
+            index={0}
+            total={1}
+            isHero
+          />
+        </Suspense>
       )}
 
       <group ref={orbitRef}>
         {orbitPhotos.map((photo, i) => (
-          <InteractivePhotoFrame
-            key={photo.src}
-            src={photo.src}
-            caption={photo.caption}
-            size={photo.size}
-            index={i}
-            total={orbitPhotos.length}
-            isHero={false}
-          />
+          <Suspense key={photo.src} fallback={null}>
+            <InteractivePhotoFrame
+              src={photo.src}
+              caption={photo.caption}
+              size={photo.size}
+              index={i}
+              total={orbitPhotos.length}
+              isHero={false}
+            />
+          </Suspense>
         ))}
       </group>
     </group>

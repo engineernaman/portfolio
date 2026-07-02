@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useFrame, ThreeEvent } from '@react-three/fiber';
-import { MeshDistortMaterial, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { scrollToSection } from '../../lib/scrollToSection';
 
@@ -123,12 +122,10 @@ const InteractiveNode = ({
           castShadow
         >
           {geometry}
-          <MeshDistortMaterial
+          <meshStandardMaterial
             color={color}
             emissive={color}
             emissiveIntensity={hovered ? 0.85 : 0.35}
-            distort={hovered ? 0.45 : 0.22}
-            speed={2}
             roughness={0.2}
             metalness={0.85}
             transparent
@@ -139,17 +136,6 @@ const InteractiveNode = ({
           <torusGeometry args={[0.95, 0.012, 8, 48]} />
           <meshBasicMaterial color={color} transparent opacity={0.15} blending={THREE.AdditiveBlending} />
         </mesh>
-        <Text
-          position={[0, -1.2, 0]}
-          fontSize={0.18}
-          color={hovered ? '#34d399' : '#94a3b8'}
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.02}
-          outlineColor="#010208"
-        >
-          {label}
-        </Text>
       </group>
     </group>
   );

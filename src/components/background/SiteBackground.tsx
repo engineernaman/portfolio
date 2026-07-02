@@ -1,6 +1,6 @@
-import { Component, useState, useEffect, type ReactNode } from 'react';
+import { Component, Suspense, useState, useEffect, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
-import CyberEcosystem from './CyberEcosystem';
+import ScrollWorld from '../three/ScrollWorld';
 
 class CanvasErrorBoundary extends Component<
   { children: ReactNode; onFail: () => void },
@@ -13,7 +13,7 @@ class CanvasErrorBoundary extends Component<
   }
 
   componentDidCatch(err: Error) {
-    console.error('[ImmersiveCanvas]', err.message);
+    console.error('[SiteBackground]', err.message);
     this.props.onFail();
   }
 
@@ -23,12 +23,16 @@ class CanvasErrorBoundary extends Component<
   }
 }
 
-interface ImmersiveCanvasProps {
+interface SiteBackgroundProps {
   reducedMotion?: boolean;
   onUnavailable?: () => void;
 }
 
-const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanvasProps) => {
+/**
+ * Fixed full-viewport scroll-driven 3D world.
+ * Sits behind all content at z-0.
+ */
+const SiteBackground = ({ reducedMotion = false, onUnavailable }: SiteBackgroundProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -41,21 +45,25 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
   if (failed) return null;
 
   return (
-    <div className="fixed inset-0 z-[2] pointer-events-none" id="immersive-canvas">
+    <div className="fixed inset-0 z-0" id="site-background" aria-hidden>
+      <div className="absolute inset-0 bg-[#010208]" />
       <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
+          className="!absolute inset-0"
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
           camera={{ position: [-2.2, 0.6, 7.5], fov: 48 }}
           gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
-          style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
+          style={{ width: '100%', height: '100%' }}
           eventSource={document.body}
           eventPrefix="client"
         >
-          <CyberEcosystem lowPower={lowPower} />
+          <Suspense fallback={null}>
+            <ScrollWorld lowPower={lowPower} />
+          </Suspense>
         </Canvas>
       </CanvasErrorBoundary>
     </div>
   );
 };
 
-export default ImmersiveCanvas;
+export default SiteBackground;

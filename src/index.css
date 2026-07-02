@@ -27,10 +27,12 @@
   h4 {
     @apply font-display text-readable tracking-tight;
     text-wrap: balance;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
   }
 
   p {
     @apply text-readable-muted leading-relaxed;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -326,15 +328,29 @@ textarea:focus {
   z-index: 1;
 }
 
+.section-readable .container > * {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 ::selection {
   background: var(--theme-primary);
   color: #000;
 }
 
 .cyber-panel {
-  background: rgba(6, 10, 16, 0.62);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  background: rgba(4, 8, 14, 0.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.cyber-panel p,
+.cyber-panel li,
+.cyber-panel h3 {
+  color: #f1f5f9;
+}
+
+.cyber-panel .text-readable-muted {
+  color: #e2e8f0;
 }
 
 /* Readable body copy inside panels — sans-serif, high contrast */
@@ -359,7 +375,8 @@ textarea:focus {
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #cbd5e1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* MotionSites-style instant backdrop — CSS only, no WebGL */

@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getGlobalScrollProgress } from '../../lib/scrollState';
 
 const NODE_COUNT = 64;
 
@@ -12,7 +12,6 @@ interface NeuralPulseFieldProps {
 function NeuralPulseField({ lowPower = false }: NeuralPulseFieldProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
-  const progress = useScrollProgress();
   const count = lowPower ? 28 : NODE_COUNT;
 
   const { positions, velocities, linePositions } = useMemo(() => {
@@ -58,6 +57,7 @@ function NeuralPulseField({ lowPower = false }: NeuralPulseFieldProps) {
 
   useFrame((state) => {
     if (!pointsRef.current) return;
+    const progress = getGlobalScrollProgress();
     const pos = pointsRef.current.geometry.attributes.position.array as Float32Array;
     const t = state.clock.elapsedTime;
     const attractZ = 2 + progress * 4;

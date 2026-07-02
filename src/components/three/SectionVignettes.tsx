@@ -1,8 +1,8 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getGlobalScrollProgress, subscribeScrollProgress } from '../../lib/scrollState';
 
 type Vec3 = [number, number, number];
 
@@ -401,7 +401,9 @@ export function getSectorLabel(progress: number): string {
 }
 
 const SectionVignettes = () => {
-  const progress = useScrollProgress();
+  const [, setTick] = useState(0);
+  useEffect(() => subscribeScrollProgress(() => setTick((n) => n + 1)), []);
+  const progress = getGlobalScrollProgress();
 
   return (
     <>

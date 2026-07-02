@@ -1,8 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
-import { getScrollVelocity } from '../../lib/scrollState';
+import { getGlobalScrollProgress, getScrollVelocity } from '../../lib/scrollState';
 import { createNexusMaterial } from './shaders/nexusCore';
 
 const RING_COUNT = 3;
@@ -11,11 +10,11 @@ function NexusCore() {
   const groupRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Mesh>(null);
   const ringsRef = useRef<THREE.Group>(null);
-  const progress = useScrollProgress();
   const material = useMemo(() => createNexusMaterial(), []);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
+    const progress = getGlobalScrollProgress();
     const velocity = getScrollVelocity();
 
     material.uniforms.uTime.value = t;

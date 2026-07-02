@@ -1,12 +1,11 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { getGlobalScrollProgress } from '../../lib/scrollState';
 
 /** Ambient particles that travel with scroll depth — keeps void alive between sections */
 function ScrollDepthAura({ count = 400 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null);
-  const progress = useScrollProgress();
 
   const geo = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -22,6 +21,7 @@ function ScrollDepthAura({ count = 400 }: { count?: number }) {
 
   useFrame((state) => {
     if (!ref.current) return;
+    const progress = getGlobalScrollProgress();
     const t = state.clock.elapsedTime;
     ref.current.position.z = THREE.MathUtils.lerp(0, -18, progress);
     ref.current.rotation.y = t * 0.03;
