@@ -1,4 +1,4 @@
-import { Mic, Users, Monitor, Gavel, Radio } from 'lucide-react';
+import { Mic, Users, Monitor, Gavel, Radio, ExternalLink } from 'lucide-react';
 import SectionHeader from './ui/SectionHeader';
 import CyberPanel from './ui/CyberPanel';
 import {
@@ -7,6 +7,7 @@ import {
   judgingHighlights,
   speakingTopics,
 } from '../data/portfolio';
+import { SPEAKING_PHOTOS, SPEAKING_VIDEOS } from '../data/speakingMedia';
 
 const Speaking = () => (
   <section id="speaking" className="py-20 md:py-28 relative">
@@ -16,6 +17,45 @@ const Speaking = () => (
         title="Speaking & Stage"
         subtitle="ISS World Europe & MEA, live keynotes to thousands, competition judge."
       />
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-10">
+        {SPEAKING_PHOTOS.map((photo) => (
+          <div
+            key={photo.src}
+            className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-emerald-500/20 bg-black/40 hover:border-emerald-400/50 transition-all hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(52,211,153,0.2)]"
+          >
+            <img
+              src={photo.src}
+              alt={photo.caption}
+              loading="lazy"
+              className="w-full h-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <p className="absolute bottom-2 left-2 right-2 text-[10px] font-mono text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity truncate">
+              {photo.caption}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4 mb-8">
+        {SPEAKING_VIDEOS.map((vid) => (
+          <a
+            key={vid.url}
+            href={vid.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-4 rounded-xl border border-cyan-500/25 bg-cyan-500/5 hover:bg-cyan-500/10 transition-colors group"
+          >
+            <Radio className="w-5 h-5 text-cyan-400 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{vid.title}</p>
+              <p className="text-[10px] text-slate/50 font-mono">{vid.date} · LinkedIn</p>
+            </div>
+            <ExternalLink className="w-4 h-4 text-slate/40 group-hover:text-cyan-400" />
+          </a>
+        ))}
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         {speakingEvents.map((evt) => (
@@ -58,7 +98,8 @@ const Speaking = () => (
             <ul className="space-y-2">
               {judgingHighlights.map((j) => (
                 <li key={j} className="text-base text-readable-muted font-body flex gap-2 leading-relaxed">
-                  <span className="text-emerald-400/80">·</span> {j}
+                  <span className="text-rose-400 shrink-0">▸</span>
+                  {j}
                 </li>
               ))}
             </ul>
@@ -67,15 +108,12 @@ const Speaking = () => (
       </CyberPanel>
 
       <CyberPanel glow="cyan" className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Radio className="w-5 h-5 text-cyan-400/80" />
-          <h3 className="label-cyber">Topics</h3>
-        </div>
+        <h3 className="label-cyber mb-4">Topics</h3>
         <div className="flex flex-wrap gap-2">
           {speakingTopics.map((topic) => (
             <span
               key={topic}
-              className="text-xs px-2.5 py-1.5 border border-white/12 text-readable-muted rounded-md bg-white/[0.04] font-body"
+              className="px-3 py-1.5 text-xs font-mono rounded-full border border-cyan-500/25 bg-cyan-500/5 text-cyan-300/90"
             >
               {topic}
             </span>
