@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import { AnimatedRays } from '@/components/ui/animated-rays';
 import AnimatedButton from '@/components/ui/animated-button';
 
 interface LoadingScreenProps {
@@ -42,9 +41,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, reducedMotion
 
   return (
     <div className="fixed inset-0 bg-void z-[200] flex items-center justify-center font-mono overflow-hidden">
-      <div className="absolute inset-0 opacity-25 pointer-events-none">
-        <AnimatedRays className="h-full w-full" />
-      </div>
       <div
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
@@ -57,7 +53,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, reducedMotion
       <div className="text-center w-80 p-8 border border-emerald-500/25 rounded-2xl bg-[rgba(6,10,16,0.92)] backdrop-blur-xl shadow-[0_0_80px_rgba(52,211,153,0.12)] relative">
         <p className="text-white text-xl font-display font-bold mb-1 tracking-tight">SoumySec</p>
         <p className="text-emerald-400/60 text-[10px] tracking-[0.35em] mb-1">NEXUS BOOT</p>
-        <p className="text-cyan-400/40 text-[9px] tracking-wide mb-6">Vengeance · Skiper · Animmaster stack</p>
+        <p className="text-cyan-400/40 text-[9px] tracking-wide mb-6">Premium 3D ecosystem loading</p>
 
         <div className="w-full h-1 bg-white/5 overflow-hidden rounded-full mb-4">
           <div

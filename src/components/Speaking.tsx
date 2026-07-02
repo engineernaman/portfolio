@@ -1,16 +1,17 @@
 import { Mic, Users, Monitor, Gavel, Radio, ExternalLink } from 'lucide-react';
 import SectionHeader from './ui/SectionHeader';
 import CyberPanel from './ui/CyberPanel';
+import SpeakingGalleryCanvas from './three/SpeakingGalleryCanvas';
 import {
   speakingEvents,
   speakingAudiences,
   judgingHighlights,
   speakingTopics,
 } from '../data/portfolio';
-import { SPEAKING_PHOTOS, SPEAKING_VIDEOS } from '../data/speakingMedia';
+import { SPEAKING_VIDEOS } from '../data/speakingMedia';
 
 const Speaking = () => (
-  <section id="speaking" className="py-20 md:py-28 relative">
+  <section id="speaking" className="py-20 md:py-28 relative section-readable">
     <div className="container mx-auto px-6 max-w-6xl">
       <SectionHeader
         number="04"
@@ -18,25 +19,10 @@ const Speaking = () => (
         subtitle="ISS World Europe & MEA, live keynotes to thousands, competition judge."
       />
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-10">
-        {SPEAKING_PHOTOS.map((photo) => (
-          <div
-            key={photo.src}
-            className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-emerald-500/20 bg-black/40 hover:border-emerald-400/50 transition-all hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(52,211,153,0.2)]"
-          >
-            <img
-              src={photo.src}
-              alt={photo.caption}
-              loading="lazy"
-              className="w-full h-full object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <p className="absolute bottom-2 left-2 right-2 text-[10px] font-mono text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity truncate">
-              {photo.caption}
-            </p>
-          </div>
-        ))}
-      </div>
+      <CyberPanel glow="cyan" className="p-4 sm:p-6 mb-10">
+        <p className="label-cyber mb-4">Stage Gallery</p>
+        <SpeakingGalleryCanvas />
+      </CyberPanel>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
         {SPEAKING_VIDEOS.map((vid) => (

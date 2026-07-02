@@ -4,7 +4,7 @@ import CyberPanel from './ui/CyberPanel';
 import { recognition } from '../data/portfolio';
 
 const Recognition = () => (
-  <section id="recognition" className="py-20 md:py-28 relative">
+  <section id="recognition" className="py-20 md:py-28 relative section-readable">
     <div className="container mx-auto px-6 max-w-6xl">
       <SectionHeader
         number="07"

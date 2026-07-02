@@ -71,7 +71,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 relative">
+    <section id="contact" className="py-20 md:py-28 relative section-readable">
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="mb-10">
           <VisitorPulse />

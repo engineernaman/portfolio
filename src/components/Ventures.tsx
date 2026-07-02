@@ -3,7 +3,7 @@ import CyberPanel from './ui/CyberPanel';
 import { ventures } from '../data/portfolio';
 
 const Ventures = () => (
-  <section id="ventures" className="py-20 md:py-28 relative">
+  <section id="ventures" className="py-20 md:py-28 relative section-readable">
     <div className="container mx-auto px-6 max-w-6xl">
       <SectionHeader
         number="03"

@@ -141,8 +141,7 @@ function AppContent() {
           <HeroExperience reducedMotion={reducedMotion} />
           <DomainMarquee />
 
-          <div className="relative pointer-events-auto bg-[rgba(6,10,16,0.94)] backdrop-blur-xl border-t border-white/[0.07] shadow-[0_-32px_80px_rgba(0,0,0,0.65)]">
-            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(1,2,8,0.88)] via-[rgba(6,10,16,0.96)] to-[rgba(6,10,16,0.98)] pointer-events-none" aria-hidden />
+          <div className="relative pointer-events-auto">
             <div className="relative">
               <AnimatedSection><About /></AnimatedSection>
               <AnimatedSection><Experience /></AnimatedSection>
