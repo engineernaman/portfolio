@@ -36,23 +36,26 @@ function getClientIp(req) {
 }
 
 async function enrichIp(ip) {
-  if (ip === 'unknown' || ip.startsWith('127.') || ip === '::1' || ip.startsWith('::ffff:127.')) {
-    return {
-      city: 'Local',
-      regionName: '',
-      country: 'Development',
-      isp: 'Localhost',
-      org: 'Local',
-      proxy: false,
-      hosting: false,
-    };
-  }
+  const isLocal =
+    ip === 'unknown' || ip.startsWith('127.') || ip === '::1' || ip.startsWith('::ffff:127.');
+  const url = isLocal ? 'https://ipwho.is/' : `https://ipwho.is/${encodeURIComponent(ip)}`;
+
   try {
-    const res = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,regionName,city,isp,org,proxy,hosting,mobile`
-    );
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     const data = await res.json();
-    if (data.status === 'success') return data;
+    if (data.success) {
+      return {
+        city: data.city,
+        regionName: data.region,
+        country: data.country,
+        isp: data.connection?.isp || data.connection?.org,
+        org: data.connection?.org,
+        proxy: Boolean(data.security?.proxy || data.security?.vpn),
+        hosting: data.type === 'hosting',
+        mobile: data.type === 'mobile',
+        tor: Boolean(data.security?.tor),
+      };
+    }
   } catch {
     /* geo lookup failed */
   }
@@ -61,7 +64,8 @@ async function enrichIp(ip) {
 
 function assessVpn(geo) {
   if (!geo) return 'Unknown — geo lookup unavailable';
-  if (geo.proxy) return 'Likely VPN/Proxy (proxy flag)';
+  if (geo.tor) return 'Tor network suspected';
+  if (geo.proxy) return 'Likely VPN/Proxy detected';
   if (geo.hosting) return 'Likely VPN/Datacenter (hosting IP)';
   const isp = `${geo.isp || ''} ${geo.org || ''}`.toLowerCase();
   if (/vpn|proxy|tor|datacenter|hosting|cloud|digitalocean|amazon|google|azure|mullvad|nordvpn/i.test(isp)) {
@@ -90,7 +94,12 @@ function formatLogEntry(entry) {
     `Timezone:     ${entry.timezone}`,
     `Language:     ${entry.language}`,
     `Screen:       ${entry.screen}`,
+    `Viewport:     ${entry.viewport}`,
+    `Pixel ratio:  ${entry.pixelRatio}`,
+    `OS:           ${entry.os}`,
     `Platform:     ${entry.platform}`,
+    `Architecture: ${entry.architecture}`,
+    `GPU:          ${entry.gpu}`,
     `Hardware:     ${entry.hardware}`,
     `Browser:      ${entry.browser}`,
     `Local time:   ${entry.localTime}`,
@@ -132,8 +141,13 @@ app.post('/api/visitor-pulse', async (req, res) => {
     timezone: client.timezone || 'unknown',
     language: client.language || 'unknown',
     screen: client.screen || 'unknown',
+    viewport: client.viewport || 'unknown',
+    pixelRatio: client.pixelRatio || 'unknown',
     platform: client.platform || 'unknown',
-    hardware: `${client.cores ?? '?'} cores · ${client.deviceMemory ?? '?'} GB RAM`,
+    os: client.os || client.platform || 'unknown',
+    architecture: client.architecture || 'unknown',
+    gpu: client.gpu || 'unknown',
+    hardware: client.hardwareSummary || `${client.cores ?? '?'} logical cores · ${client.deviceMemory ?? '?'} GB RAM`,
     referrer: client.referrer || 'direct',
     sessionId: client.sessionId || 'unknown',
     browser: client.userAgent ? (client.userAgent.includes('Edg') ? 'Microsoft Edge' : client.userAgent.includes('Chrome') ? 'Chrome' : client.userAgent.includes('Firefox') ? 'Firefox' : 'Other') : 'unknown',
@@ -161,13 +175,69 @@ app.post('/api/visitor-pulse', async (req, res) => {
     timezone: entry.timezone,
     language: entry.language,
     screen: entry.screen,
+    viewport: entry.viewport,
+    pixelRatio: entry.pixelRatio,
     platform: entry.platform,
+    os: entry.os,
+    architecture: entry.architecture,
+    gpu: entry.gpu,
     hardware: entry.hardware,
     referrer: entry.referrer,
     sessionId: entry.sessionId,
     localTime: entry.localTime,
     browser: entry.browser,
   });
+});
+
+const PIPED_INSTANCES = [
+  'https://pipedapi.kavin.rocks',
+  'https://pipedapi.adminforge.de',
+  'https://api.piped.yt',
+];
+
+async function searchYouTubeServer(query) {
+  for (const base of PIPED_INSTANCES) {
+    try {
+      const res = await fetch(
+        `${base}/search?q=${encodeURIComponent(query)}&filter=music_songs`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      if (!res.ok) continue;
+      const data = await res.json();
+      const items = data.items ?? data.relatedStreams ?? [];
+      return items.slice(0, 10).map((v) => {
+        const raw = v.url || v.id || '';
+        const match = String(raw).match(/([a-zA-Z0-9_-]{11})/);
+        const id = match?.[1];
+        if (!id) return null;
+        return {
+          id: `yt-${id}`,
+          title: v.title || 'YouTube track',
+          artist: v.uploaderName || v.uploader || 'YouTube',
+          thumbnail: v.thumbnail,
+          youtubeId: id,
+          source: 'youtube',
+        };
+      }).filter(Boolean);
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
+app.get('/api/music/search', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  if (!q) return res.json({ results: [] });
+  if (!rateLimit(getClientIp(req), 30, 60000)) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
+  try {
+    const results = await searchYouTubeServer(q);
+    res.json({ results });
+  } catch {
+    res.status(502).json({ results: [] });
+  }
 });
 
 const distPath = join(__dirname, '..', 'dist');

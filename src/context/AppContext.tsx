@@ -21,6 +21,8 @@ interface AppContextValue {
   openIntelLab: () => void;
   closeIntelLab: () => void;
   intelLabOpen: boolean;
+  openTerminal: () => void;
+  registerOpenTerminal: (fn: () => void) => void;
   visitorProfile: VisitorPulseResponse | null;
   setVisitorProfile: (profile: VisitorPulseResponse | null) => void;
 }
@@ -50,6 +52,11 @@ export function AppProvider({
   const triggerMatrix = useCallback(() => triggerMatrixRef.current(), []);
   const openIntelLab = useCallback(() => setIntelLabOpen(true), []);
   const closeIntelLab = useCallback(() => setIntelLabOpen(false), []);
+  const openTerminalRef = useRef<() => void>(() => {});
+  const openTerminal = useCallback(() => openTerminalRef.current(), []);
+  const registerOpenTerminal = useCallback((fn: () => void) => {
+    openTerminalRef.current = fn;
+  }, []);
 
   const registerPlayTypingSound = useCallback((fn: () => void) => {
     playTypingRef.current = fn;
@@ -85,6 +92,8 @@ export function AppProvider({
         openIntelLab,
         closeIntelLab,
         intelLabOpen,
+        openTerminal,
+        registerOpenTerminal,
         visitorProfile,
         setVisitorProfile,
       }}

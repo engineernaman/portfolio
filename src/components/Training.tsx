@@ -4,7 +4,7 @@ import CyberPanel from './ui/CyberPanel';
 import { globalTraining } from '../data/portfolio';
 
 const Training = () => (
-  <section id="training" className="py-20 md:py-28 relative">
+  <section id="training" className="py-20 md:py-28 relative section-readable">
     <div className="container mx-auto px-6 max-w-6xl">
       <SectionHeader
         number="06"

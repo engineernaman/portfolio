@@ -7,11 +7,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    scroll-padding-top: 5.5rem;
+    color-scheme: dark;
+    --scroll-progress: 0;
+    --stripe-color: rgba(52, 211, 153, 0.12);
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
   }
 
   body {
     @apply font-body text-readable leading-relaxed;
     font-size: 16px;
+    background: #010208;
   }
 
   h1,
@@ -20,14 +27,24 @@
   h4 {
     @apply font-display text-readable tracking-tight;
     text-wrap: balance;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
   }
 
   p {
     @apply text-readable-muted leading-relaxed;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   }
 }
 
-/* CSS Variables for Dynamic Theming */
+@keyframes aurora-bg {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+.animate-aurora-bg {
+  animation: aurora-bg 60s linear infinite;
+}
+
 :root {
   --theme-primary: #00ff41;
   --theme-secondary: #00ffff;
@@ -302,14 +319,38 @@ textarea:focus {
   padding: 0 1.5rem;
 }
 
+.section-readable {
+  position: relative;
+}
+
+.section-readable .container {
+  position: relative;
+  z-index: 1;
+}
+
+.section-readable .container > * {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 ::selection {
   background: var(--theme-primary);
   color: #000;
 }
 
 .cyber-panel {
-  background: rgba(10, 14, 22, 0.92);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  background: rgba(4, 8, 14, 0.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.cyber-panel p,
+.cyber-panel li,
+.cyber-panel h3 {
+  color: #f1f5f9;
+}
+
+.cyber-panel .text-readable-muted {
+  color: #e2e8f0;
 }
 
 /* Readable body copy inside panels — sans-serif, high contrast */
@@ -317,11 +358,11 @@ textarea:focus {
   font-family: Inter, system-ui, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.75;
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .prose-cyber p {
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .prose-cyber strong,
@@ -334,7 +375,8 @@ textarea:focus {
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #cbd5e1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* MotionSites-style instant backdrop — CSS only, no WebGL */
@@ -414,6 +456,16 @@ textarea:focus {
   .motion-hero-ring,
   .motion-hero-ring-inner {
     animation: none;
+  }
+}
+
+.hero-glow-name {
+  filter: drop-shadow(0 0 24px rgba(52, 211, 153, 0.25));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow-name {
+    filter: none;
   }
 }
 

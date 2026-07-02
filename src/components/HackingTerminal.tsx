@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 import { profile, skillDomains, ventures } from '../data/portfolio';
 
 const HackingTerminal = () => {
-  const { triggerMatrix, playTypingSound } = useApp();
+  const { triggerMatrix, playTypingSound, registerOpenTerminal } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([
@@ -135,6 +135,10 @@ const HackingTerminal = () => {
     }
   }, [output]);
 
+  useEffect(() => {
+    registerOpenTerminal(() => setIsOpen(true));
+  }, [registerOpenTerminal]);
+
   // Konami code listener
   useEffect(() => {
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
@@ -156,17 +160,7 @@ const HackingTerminal = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 bg-black/80 border border-coral/40 rounded-full text-violet hover:bg-violet/20 transition-all duration-300 z-50 group"
-        title="Open Hacking Terminal (or try the Konami code!)"
-      >
-        <Terminal className="w-6 h-6 group-hover:animate-pulse" />
-      </button>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-4 bg-black/95 border border-coral/40 rounded-lg z-50 flex flex-col overflow-hidden backdrop-blur-sm">

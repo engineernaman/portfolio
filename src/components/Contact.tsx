@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Send, Mail, MapPin, Linkedin, Github } from 'lucide-react';
+import AnimatedButton from '@/components/ui/animated-button';
+import { SkiperLink } from '@/components/skiper/SkiperPrimitives';
 import SectionHeader from './ui/SectionHeader';
 import VisitorPulse from './VisitorPulse';
 import { sendVisitorPulse } from '../lib/visitorIntel';
@@ -69,7 +71,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 relative">
+    <section id="contact" className="py-20 md:py-28 relative section-readable">
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="mb-10">
           <VisitorPulse />
@@ -112,12 +114,9 @@ const Contact = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setTerminalMode(!terminalMode)}
-              className="font-mono text-xs tracking-widest text-readable-dim hover:text-emerald-400 transition-colors"
-            >
+            <SkiperLink href="#" variant="slide" className="text-xs tracking-widest" onClick={(e) => { e.preventDefault(); setTerminalMode(!terminalMode); }}>
               {terminalMode ? '← Standard mode' : '→ Terminal mode'}
-            </button>
+            </SkiperLink>
 
             {terminalMode && (
               <div className="p-4 border border-emerald-500/20 rounded-xl bg-black/60 font-mono text-xs text-readable-muted h-64 overflow-y-auto">
@@ -157,12 +156,13 @@ const Contact = () => {
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               className="w-full px-4 py-3 bg-black/30 border border-white/12 rounded-lg text-readable text-base font-body placeholder:text-readable-dim focus:border-emerald-500/50 outline-none transition-colors resize-none"
             />
-            <button
+            <AnimatedButton
               type="submit"
-              className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-void font-body text-sm font-semibold rounded-md hover:bg-emerald-400 transition-colors"
+              className="!bg-emerald-500/90 !border-emerald-400/50 !text-void font-semibold text-sm"
             >
-              <Send className="w-4 h-4" /> Send via Email
-            </button>
+              <Send className="w-4 h-4 mr-2" />
+              Send via Email
+            </AnimatedButton>
           </form>
         </div>
       </div>

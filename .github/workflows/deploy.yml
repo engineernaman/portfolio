@@ -4,11 +4,27 @@ on:
   push:
     branches: [ "main", "dev" ]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install & build frontend
+        run: |
+          npm ci --legacy-peer-deps
+          NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -21,7 +37,7 @@ jobs:
       - name: Sync deploy files to server
         run: |
           rsync -avz --delete \
-            -e "ssh" \
+            -e "ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=120" \
             --include='Dockerfile' \
             --include='docker-compose.yml' \
             --include='docker-compose.staging.yml' \
@@ -29,33 +45,28 @@ jobs:
             --include='package.json' \
             --include='package-lock.json' \
             --include='server/***' \
-            --include='src/***' \
-            --include='public/***' \
+            --include='dist/***' \
             --include='index.html' \
-            --include='vite.config.ts' \
-            --include='tsconfig*.json' \
-            --include='tailwind.config.js' \
-            --include='postcss.config.js' \
-            --include='eslint.config.js' \
             --exclude='*' \
             ./ ${{ secrets.USER }}@${{ secrets.HOST }}:${{ secrets.TARGET_DIR }}/
 
       - name: Build & restart on server (branch-aware)
         run: |
-          ssh ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
+          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=120 \
+            ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
           set -e
           cd ${{ secrets.TARGET_DIR }}
           BRANCH="${{ github.ref_name }}"
           if [ "$BRANCH" = "main" ]; then
             docker-compose -p portfolio-prod down --remove-orphans || true
             docker rm -f portfolio-web 2>/dev/null || true
-            docker-compose -p portfolio-prod build --no-cache
+            docker-compose -p portfolio-prod build
             docker-compose -p portfolio-prod up -d --force-recreate --remove-orphans
           else
             docker-compose -p portfolio-staging -f docker-compose.staging.yml down --remove-orphans || true
             docker rm -f portfolio-web-staging 2>/dev/null || true
-            docker-compose -p portfolio-staging -f docker-compose.staging.yml build --no-cache
+            docker-compose -p portfolio-staging -f docker-compose.staging.yml build
             docker-compose -p portfolio-staging -f docker-compose.staging.yml up -d --force-recreate --remove-orphans
           fi
-          docker system prune -f || true
+          docker image prune -f || true
           EOF

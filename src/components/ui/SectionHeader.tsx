@@ -1,3 +1,5 @@
+import { TextReveal } from '@/lib/animmaster';
+
 interface SectionHeaderProps {
   number: string;
   title: string;
@@ -13,13 +15,19 @@ const SectionHeader = ({ number, title, subtitle, align = 'left' }: SectionHeade
       </span>
       <div className="h-px w-10 bg-white/15" />
     </div>
-    <h2 className="font-display text-3xl md:text-[2.25rem] font-bold text-readable tracking-tight leading-tight">
-      {title}
-    </h2>
+    <TextReveal
+      as="h2"
+      text={title}
+      className="font-display text-3xl md:text-[2.25rem] font-bold text-readable tracking-tight leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
+    />
     {subtitle && (
-      <p className="mt-4 text-readable-muted max-w-2xl text-base md:text-[1.0625rem] leading-relaxed font-body">
-        {subtitle}
-      </p>
+      <TextReveal
+        as="p"
+        text={subtitle}
+        className={`mt-4 text-readable max-w-2xl text-base md:text-[1.0625rem] leading-relaxed font-body drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)] ${
+          align === 'center' ? 'mx-auto' : ''
+        }`}
+      />
     )}
   </div>
 );

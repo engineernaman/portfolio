@@ -8,8 +8,8 @@ export default {
         surface: '#0a0f14',
         slate: '#e2e8f0',
         readable: '#f8fafc',
-        'readable-muted': '#cbd5e1',
-        'readable-dim': '#94a3b8',
+        'readable-muted': '#e2e8f0',
+        'readable-dim': '#b8c5d6',
         mist: '#94a3b8',
         neon: '#00ff41',
         matrix: '#00ffff',
@@ -50,4 +50,5 @@ export default {
     },
   },
   plugins: [],
+  darkMode: 'class',
 };

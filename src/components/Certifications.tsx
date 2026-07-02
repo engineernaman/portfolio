@@ -2,7 +2,7 @@ import SectionHeader from './ui/SectionHeader';
 import { certificationCategories, certificationNote } from '../data/portfolio';
 
 const Certifications = () => (
-  <section id="certifications" className="py-20 md:py-28 relative">
+  <section id="certifications" className="py-20 md:py-28 relative section-readable">
     <div className="container mx-auto px-6 max-w-6xl">
       <SectionHeader
         number="06b"

@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useFrame, ThreeEvent } from '@react-three/fiber';
-import { MeshDistortMaterial, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { scrollToSection } from '../../lib/scrollToSection';
 
@@ -24,6 +23,7 @@ const InteractiveNode = ({
   physics = false,
 }: InteractiveNodeProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
   const offsetGroupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -41,6 +41,13 @@ const InteractiveNode = ({
 
     const targetScale = hovered ? scale * 1.2 : scale;
     meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+
+    if (ringRef.current) {
+      const ringScale = hovered ? 1.6 : 1.2;
+      ringRef.current.scale.lerp(new THREE.Vector3(ringScale, ringScale, ringScale), 0.12);
+      const mat = ringRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, hovered ? 0.55 : 0.15, 0.1);
+    }
 
     if (physics) {
       if (!dragging) {
@@ -115,29 +122,20 @@ const InteractiveNode = ({
           castShadow
         >
           {geometry}
-          <MeshDistortMaterial
+          <meshStandardMaterial
             color={color}
             emissive={color}
             emissiveIntensity={hovered ? 0.85 : 0.35}
-            distort={hovered ? 0.45 : 0.22}
-            speed={2}
             roughness={0.2}
             metalness={0.85}
             transparent
             opacity={0.92}
           />
         </mesh>
-        <Text
-          position={[0, -1.2, 0]}
-          fontSize={0.18}
-          color={hovered ? '#34d399' : '#94a3b8'}
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.02}
-          outlineColor="#010208"
-        >
-          {label}
-        </Text>
+        <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.95, 0.012, 8, 48]} />
+          <meshBasicMaterial color={color} transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+        </mesh>
       </group>
     </group>
   );

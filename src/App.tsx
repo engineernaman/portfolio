@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import Navbar from './components/Navbar';
+import ImmersiveNav from './components/ImmersiveNav';
 import About from './components/About';
 import Experience from './components/Experience';
 import Ventures from './components/Ventures';
@@ -18,15 +18,22 @@ import AnimatedSection from './components/AnimatedSection';
 import HeroExperience from './components/HeroExperience';
 import DomainMarquee from './components/DomainMarquee';
 import MotionBackdrop from './components/MotionBackdrop';
-import ImmersiveHud from './components/ImmersiveHud';
 import IntelLab from './components/IntelLab';
 import VisitorSessionBadge from './components/VisitorSessionBadge';
-import MusicPlayer from './components/MusicPlayer';
+import LoadingScreen from './components/LoadingScreen';
 import ImmersiveCanvas from './components/three/ImmersiveCanvas';
+import HomeScrollBackdrop from './components/HomeScrollBackdrop';
+import MusicPage from './pages/MusicPage';
+import CyberChefPage from './pages/CyberChefPage';
 
 import { AppProvider, useApp } from './context/AppContext';
+import { MusicProvider } from './context/MusicContext';
+import GlobalMusicPlayer from './components/GlobalMusicPlayer';
+import QuickActionDock from './components/QuickActionDock';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
+import { useSitePage } from './hooks/useSitePage';
+import { sendVisitorPulse, hasScannedThisSession, markScannedThisSession } from './lib/visitorIntel';
 import { detectWebGL } from './lib/webglDetect';
 
 import { motion, useScroll, useSpring } from 'framer-motion';
@@ -34,10 +41,19 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 function AppContent() {
   const [showMatrix, setShowMatrix] = useState(false);
   const [show3d, setShow3d] = useState(true);
-  const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab } = useApp();
+  const [booted, setBooted] = useState(() => {
+    try {
+      return sessionStorage.getItem('soumysec-booted') === '1';
+    } catch {
+      return false;
+    }
+  });
+  const { page } = useSitePage();
+  const isHome = page === 'home';
+  const { registerTriggerMatrix, reducedMotion, intelLabOpen, closeIntelLab, openIntelLab, setVisitorProfile, visitorProfile } = useApp();
   const webgl = useMemo(() => detectWebGL(), []);
 
-  useSmoothScroll(true, reducedMotion);
+  useSmoothScroll(isHome, reducedMotion);
 
   useEffect(() => {
     if (window.location.hash === '#intel-lab') {
@@ -47,10 +63,10 @@ function AppContent() {
   }, [openIntelLab]);
 
   useEffect(() => {
-    if (reducedMotion || webgl.capability === 'none') {
+    if (webgl.capability === 'none') {
       setShow3d(false);
     }
-  }, [reducedMotion, webgl.capability]);
+  }, [webgl.capability]);
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
@@ -59,52 +75,97 @@ function AppContent() {
     registerTriggerMatrix(() => setShowMatrix(true));
   }, [registerTriggerMatrix]);
 
+  useEffect(() => {
+    if (!isHome) return;
+    if (visitorProfile?.ip && !/resolving|unavailable/i.test(visitorProfile.ip)) return;
+    if (hasScannedThisSession()) return;
+    sendVisitorPulse('connection').then((result) => {
+      setVisitorProfile(result);
+      markScannedThisSession();
+    });
+  }, [isHome, visitorProfile?.ip, setVisitorProfile]);
+
   return (
-    <div className="min-h-screen bg-[#010208] text-slate font-body overflow-x-hidden">
-      {show3d ? (
-        <ImmersiveCanvas
+    <div className="min-h-screen bg-transparent text-slate font-body overflow-x-hidden">
+      {!booted && (
+        <LoadingScreen
+          onComplete={() => {
+            setBooted(true);
+            try {
+              sessionStorage.setItem('soumysec-booted', '1');
+            } catch {
+              /* ignore */
+            }
+          }}
           reducedMotion={reducedMotion}
-          onUnavailable={() => setShow3d(false)}
         />
-      ) : (
+      )}
+
+      {isHome && (
+        <>
+          {show3d && (
+            <ImmersiveCanvas
+              reducedMotion={reducedMotion}
+              onUnavailable={() => setShow3d(false)}
+            />
+          )}
+          <HomeScrollBackdrop reducedMotion={reducedMotion} />
+        </>
+      )}
+      {!isHome && (
         <MotionBackdrop reducedMotion={reducedMotion} />
       )}
 
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-px bg-emerald-500/60 origin-left z-[60]"
-        style={{ scaleX }}
-      />
+      {isHome && (
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-px bg-emerald-500/60 origin-left z-[60]"
+          style={{ scaleX }}
+        />
+      )}
 
       <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <div className="pointer-events-auto">
-          <Navbar />
+          <ImmersiveNav activePage={page} />
         </div>
       </div>
 
-      <ImmersiveHud />
-      <MusicPlayer />
 
-      <div className="relative z-10 pointer-events-none">
-        <HeroExperience reducedMotion={reducedMotion} />
-        <DomainMarquee />
+      {page === 'music' && (
+        <div className="relative z-10">
+          <MusicPage />
+        </div>
+      )}
 
-        <div className="relative pointer-events-auto">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/15 to-void/55 pointer-events-none" aria-hidden />
-          <div className="relative">
-            <AnimatedSection><About /></AnimatedSection>
-            <AnimatedSection><Experience /></AnimatedSection>
-            <AnimatedSection><Ventures /></AnimatedSection>
-            <AnimatedSection><Speaking /></AnimatedSection>
-            <AnimatedSection><Research /></AnimatedSection>
-            <AnimatedSection><Training /></AnimatedSection>
-            <AnimatedSection><Recognition /></AnimatedSection>
-            <AnimatedSection><Certifications /></AnimatedSection>
-            <AnimatedSection><Contact /></AnimatedSection>
-            <Footer />
+      {page === 'cyberchef' && (
+        <div className="relative z-10">
+          <CyberChefPage />
+        </div>
+      )}
+
+      {isHome && (
+        <div className="relative z-[5] pointer-events-none">
+          <HeroExperience reducedMotion={reducedMotion} />
+          <DomainMarquee />
+
+          <div className="relative pointer-events-none">
+            <div className="relative pointer-events-auto">
+              <AnimatedSection><About /></AnimatedSection>
+              <AnimatedSection><Experience /></AnimatedSection>
+              <AnimatedSection><Ventures /></AnimatedSection>
+              <AnimatedSection><Speaking /></AnimatedSection>
+              <AnimatedSection><Research /></AnimatedSection>
+              <AnimatedSection><Training /></AnimatedSection>
+              <AnimatedSection><Recognition /></AnimatedSection>
+              <AnimatedSection><Certifications /></AnimatedSection>
+              <AnimatedSection><Contact /></AnimatedSection>
+              <Footer />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
+      <GlobalMusicPlayer />
+      <QuickActionDock />
       <IntelLab open={intelLabOpen} onClose={closeIntelLab} />
       <VisitorSessionBadge />
       <NotificationSystem />
@@ -121,7 +182,9 @@ function App() {
 
   return (
     <AppProvider reducedMotion={reducedMotion}>
-      <AppContent />
+      <MusicProvider>
+        <AppContent />
+      </MusicProvider>
     </AppProvider>
   );
 }

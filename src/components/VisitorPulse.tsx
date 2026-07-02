@@ -31,12 +31,16 @@ function buildFields(data: VisitorPulseResponse): ScanField[] {
     { key: 'battery', label: 'BATTERY', value: data.battery },
     { key: 'connection', label: 'LINK TYPE', value: data.connection },
     { key: 'browser', label: 'BROWSER', value: data.browser ?? 'Unknown' },
+    { key: 'os', label: 'OPERATING SYSTEM', value: data.os ?? data.platform },
+    { key: 'architecture', label: 'CPU ARCH', value: data.architecture ?? 'unknown' },
+    { key: 'gpu', label: 'GPU RENDERER', value: data.gpu ?? 'unknown', highlight: true },
+    { key: 'hardware', label: 'HARDWARE PROFILE', value: data.hardware },
     { key: 'timezone', label: 'TIMEZONE', value: data.timezone },
     { key: 'localTime', label: 'LOCAL TIME', value: data.localTime ?? '—' },
     { key: 'language', label: 'LANGUAGE', value: data.language },
     { key: 'screen', label: 'DISPLAY', value: data.screen },
-    { key: 'platform', label: 'OS PLATFORM', value: data.platform },
-    { key: 'hardware', label: 'HARDWARE', value: data.hardware },
+    { key: 'viewport', label: 'VIEWPORT', value: data.viewport ?? '—' },
+    { key: 'pixelRatio', label: 'PIXEL RATIO', value: data.pixelRatio ?? '—' },
     { key: 'referrer', label: 'REFERRER', value: data.referrer },
     { key: 'session', label: 'SESSION ID', value: data.sessionId },
   ];
@@ -48,11 +52,19 @@ const VisitorPulse = () => {
   const { setVisitorProfile, visitorProfile } = useApp();
   const [data, setData] = useState<VisitorPulseResponse | null>(visitorProfile);
   const [phase, setPhase] = useState<'idle' | 'scanning' | 'done'>(
-    visitorProfile ? 'done' : 'idle'
+    visitorProfile && visitorProfile.ip && !/resolving|unavailable/i.test(visitorProfile.ip) ? 'done' : 'idle'
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [visibleFields, setVisibleFields] = useState(0);
-  const scannedRef = useRef(hasScannedThisSession());
+  const scannedRef = useRef(hasScannedThisSession() || Boolean(visitorProfile));
+
+  useEffect(() => {
+    if (visitorProfile && !data) {
+      setData(visitorProfile);
+      setPhase('done');
+      setVisibleFields(buildFields(visitorProfile).length);
+    }
+  }, [visitorProfile, data]);
 
   const runScan = useCallback(async () => {
     setPhase('scanning');

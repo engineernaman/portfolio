@@ -1,8 +1,6 @@
-import { Component, Suspense, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { Component, useState, useEffect, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
 import CyberEcosystem from './CyberEcosystem';
-import { detectWebGL } from '../../lib/webglDetect';
-import { createWebGLRenderer } from '../../lib/webglRenderer';
 
 class CanvasErrorBoundary extends Component<
   { children: ReactNode; onFail: () => void },
@@ -31,7 +29,6 @@ interface ImmersiveCanvasProps {
 }
 
 const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanvasProps) => {
-  const webgl = useMemo(() => detectWebGL(), []);
   const [isMobile, setIsMobile] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -41,39 +38,20 @@ const ImmersiveCanvas = ({ reducedMotion = false, onUnavailable }: ImmersiveCanv
 
   const lowPower = reducedMotion || isMobile;
 
-  const createRenderer = useCallback(
-    (canvas: HTMLCanvasElement) =>
-      createWebGLRenderer(canvas, {
-        antialias: !lowPower,
-        alpha: false,
-        prefersWebGL1: webgl.prefersWebGL1,
-      }),
-    [lowPower, webgl.prefersWebGL1]
-  );
-
-  const handleFail = useCallback(() => {
-    setFailed(true);
-    onUnavailable?.();
-  }, [onUnavailable]);
-
-  if (webgl.capability === 'none' || failed) return null;
+  if (failed) return null;
 
   return (
-    <div className="fixed inset-0 z-[2]" id="immersive-canvas">
-      <CanvasErrorBoundary onFail={handleFail}>
+    <div className="fixed inset-0 z-[2] pointer-events-none" id="immersive-canvas">
+      <CanvasErrorBoundary onFail={() => { setFailed(true); onUnavailable?.(); }}>
         <Canvas
-          gl={createRenderer}
-          shadows={!lowPower}
           dpr={lowPower ? 1 : Math.min(window.devicePixelRatio, 2)}
-          camera={{ position: [3.5, 1.4, 9], fov: 50 }}
-          performance={{ min: 0.5 }}
+          camera={{ position: [-2.2, 0.6, 7.5], fov: 48 }}
+          gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
           style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
           eventSource={document.body}
           eventPrefix="client"
         >
-          <Suspense fallback={null}>
-            <CyberEcosystem lowPower={lowPower} />
-          </Suspense>
+          <CyberEcosystem lowPower={lowPower} />
         </Canvas>
       </CanvasErrorBoundary>
     </div>
